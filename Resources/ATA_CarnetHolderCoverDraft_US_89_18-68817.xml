@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ATA_CarnetHolderCoverDraft DocumentModeID="1003435E" xmlns="urn:customs.ru:Information:TransportDocuments:ATA:ATA_CarnetHolderCoverDraft:5.12.1" xmlns:clt_ru="urn:customs.ru:CommonLeafTypes:5.10.0" xmlns:cat_ru="urn:customs.ru:CommonAggregateTypes:5.10.0" >
+  <cat_ru:DocumentID>869AB2B9-35DD-4F92-BD6F-B1F1DD020142</cat_ru:DocumentID>
+  <IssuingCountry>US</IssuingCountry>
+  <CarnetNumber>US 89/18-68817</CarnetNumber>
+  <IssueDate>2018-11-21T00:00:00</IssueDate>
+  <ValidUntil>2019-11-20T00:00:00</ValidUntil>
+  <Holder>QUALCOMM INCORPORATED</Holder>
+  <RussianHolderAddress>
+    <Region>CA</Region>
+    <City>SAN DIEGO</City>
+    <Address>5775 MOREHOUSE DRIVE</Address>
+    <Index>092121</Index>
+  </RussianHolderAddress>
+  <RepresentedBy>MSCOW BRANCH OF QUALCOMM EUROPE, INC (USA)</RepresentedBy>
+  <IntendedUse>PROFFESSIONAL EQUIPMENT</IntendedUse>
+  <IssuedBy>UNITED STATES COUNCIL FOR INTERNATIONAL BUSINESS</IssuedBy>
+  <GeneralList>
+    <CurrencyCode>USD</CurrencyCode>
+    <Good>
+      <ListNumber>1</ListNumber>
+      <GoodDescription>ДЕТАЛЬ № P_NOVATEL_SPAN-CPT, ПРИЕМНИК СИГНАЛА ГЛОНАСС, СЕРИЙНЫЙ № HEW13320005</GoodDescription>
+      <PcsQuantity>1</PcsQuantity>
+      <AddQuantity>1</AddQuantity>
+      <AddQuantityUnit>796</AddQuantityUnit>
+      <Cost>26000.00</Cost>
+      <OriginCountry>CA</OriginCountry>
+      <TNVEDCode>8526912000</TNVEDCode>
+    </Good>
+    <Good>
+      <ListNumber>2</ListNumber>
+      <GoodDescription>ДЕТАЛЬ № P_NOVATEL_GPS-702-GGL, АНТЕНА ВЫСОКОЧУВСТВИТЕЛЬНАЯ ГЛОНАСС GPS-702-GGL, СЕРИЙНЫЙ № NAE07190023</GoodDescription>
+      <PcsQuantity>1</PcsQuantity>
+      <AddQuantity>1</AddQuantity>
+      <AddQuantityUnit>796</AddQuantityUnit>
+      <Cost>1200.00</Cost>
+      <OriginCountry>CA</OriginCountry>
+      <TNVEDCode>8529109500</TNVEDCode>
+    </Good>
+    <Good>
+      <ListNumber>3</ListNumber>
+      <GoodDescription>ДЕТАЛЬ № 3P_GEONAV_LABSAT_3, LABSAT 3, ВОСПРОИЗВЕДЕНИЯ СИГНАЛА ТРЕХ НАВИГАЦИОННЫХ СИСТЕМ СЕРИЙНЫЙ № 37544</GoodDescription>
+      <PcsQuantity>1</PcsQuantity>
+      <AddQuantity>1</AddQuantity>
+      <AddQuantityUnit>796</AddQuantityUnit>
+      <Cost>25732.00</Cost>
+      <OriginCountry>GB</OriginCountry>
+      <TNVEDCode>8529906509</TNVEDCode>
+    </Good>
+  </GeneralList>
+</ATA_CarnetHolderCoverDraft>
