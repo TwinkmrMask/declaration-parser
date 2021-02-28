@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Xml;
 using System.IO;
 
@@ -22,13 +10,20 @@ namespace WpfApp3
     /// </summary>
     public partial class MainWindow : Window
     {
-
         List<string> FileNames = new List<string>();
         List<string> ID = new List<string>();
-
-        private void sort()
+        string[] getPath()
         {
-            GetId();
+            Microsoft.Win32.OpenFileDialog openDialog = new Microsoft.Win32.OpenFileDialog();
+            openDialog.Filter = "Файл Xml|*.Xml";
+            var result = openDialog.ShowDialog();
+            string fileName = System.IO.Path.GetFileName(openDialog.FileName);
+            string path = openDialog.FileName;
+            return new string[] { path, fileName };
+        }
+        private void sort(in string[] path)
+        {
+            GetId(in path);
             for(int i = 0; i < ID.Count-1;)
             {
                 for(int j = i; j < ID.Count-1;)
@@ -43,16 +38,17 @@ namespace WpfApp3
                 i++;
             }
         }
-        private void GetId()
+        private void GetId(in string[] path)
         {
-            GetFile();
-            foreach (string item in FileNames) ID.Add(GetName(item));
+            GetFile(in path);
+            foreach (string item in FileNames) ID.Add(GetName(in path, item));
 
         }
-        private string GetName(string name)
+        private string GetName(in string[] path, string name)
         {
             XmlDocument document = new XmlDocument();
-            document.Load("../../../Resources/" + name);
+            
+            document.Load(path[0]);
 
             XmlElement root = document.DocumentElement;
 
@@ -73,23 +69,25 @@ namespace WpfApp3
             }
             return null;
         }
-        private void GetFile()
+        private void GetFile(in string[] path)
         {
-
-            IEnumerable<string> allfiles = Directory.EnumerateFiles("../../../Resources/", "*.xml");
-            foreach (string filename in allfiles) FileNames.Add(filename.Remove(0, 19));
+            IEnumerable<string> allfiles = Directory.EnumerateFiles(path[0].Replace(path[1],""), "*.xml");
+            foreach (string filename in allfiles) FileNames.Add(filename);
+        }
+        private void setSource()
+        {
+            string[] path = getPath();
+            sort(in path);
+            List<Declarations> declarations = new List<Declarations>();
+            foreach (string item in FileNames)
+                declarations.Add(new Declarations { FileName = item, DocumentID = GetName(in path, item) });
+            Data.ItemsSource = declarations;
         }
         public MainWindow()
         {
             InitializeComponent();
-            sort();
-            List<Declarations> declarations = new List<Declarations>();
-            foreach (string item in FileNames)
-                declarations.Add(new Declarations { FileName = item, DocumentID = GetName(item)});
-            Data.ItemsSource = declarations;
-
+            setSource();
         }
-
         private void Btn_Click(object sender, RoutedEventArgs e)
         {
             Declarations path = Data.SelectedItem as Declarations;

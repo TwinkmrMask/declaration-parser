@@ -1,18 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Xml;
-using System.IO;
 namespace WpfApp3
 {
     /// <summary>
@@ -20,63 +8,90 @@ namespace WpfApp3
     /// </summary>
     public partial class Information : Window
     {
-        public Information(string path)
+        void print(string name, string value)
         {
-            InitializeComponent();
+            block.Text += $"{name} - {value}\n";
+        }
+        void search(string value, XmlNode collection, string name)
+        {
+            foreach (XmlNode element in collection.ChildNodes)
+            {
+                if (element.Name == value)
+                    print(name, element.InnerText);
+            }
+        }
+        void XmlHandler(string path)
+        {
             XmlDocument document = new XmlDocument();
-            document.Load("../../../Resources/"+path);
+            document.Load(path);
 
             XmlElement root = document.DocumentElement;
-
-            block.Text += root.Name + "\n";
-
             foreach (XmlElement item in root)
             {
-                if (item.HasChildNodes)
-                {
-
-                    if (item.Name == "RussianHolderAddress")
-                    {
-                        foreach (XmlNode son in item.ChildNodes)
-                        {
-
-                            block.Text += son.Name + " - " + son.InnerText + "\n";
-                        }
-                    }
-                    else if (item.Name == "GeneralList")
-                    {
-                        block.Text += "<---------------------------------------------------------------------------------------------------->\n" + item.Name + "\n";
-                    }
-                    else block.Text += item.Name + " - " + item.InnerText + "\n";
-                }
-
                 foreach (XmlNode child in item.ChildNodes)
                 {
                     if (child != null)
-                    {
                         if (child.HasChildNodes)
-                        {
-
-                            foreach (XmlNode son in child.ChildNodes)
+                            foreach (XmlNode declaration in child.ChildNodes)
                             {
-                                if (son.Name != "#text")
+                                if (declaration.Name == "ESADout_CU")
                                 {
-                                    if (son.Name == "ListNumber")
+                                    foreach (XmlNode general in declaration.ChildNodes)
                                     {
-                                        block.Text += "<---------------------------------------------------------------------------------------------------->\n";
-                                    }
-                                    block.Text += son.Name + " - " + son.InnerText + "\n";
+                                        if (general.Name == "ESADout_CUGoodsShipment")
+                                        {
+                                            search("catESAD_cu:TotalPackageNumber", general, "Количество мест");
+                                            foreach (XmlNode info in general.ChildNodes)
+                                            {
+                                                if (info.Name == "ESADout_CUGoodsLocation") search("CustomsOffice", info, "Пост прибытия");
+                                                if (info.Name == "ESADout_CUConsigment") search("catESAD_cu:TransportIdentifier", info, "Транспорт");
+                                                if (info.Name == "ESADout_CUMainContractTerms")
+                                                {
+                                                    search("catESAD_cu:ContractCurrencyCode", info, "Валюта");
+                                                    search("catESAD_cu:ContractCurrencyRate", info, "Курс");
+                                                }
+                                                if (info.Name == "ESADout_CUGoods")
+                                                {                                                    search("catESAD_cu:GrossWeightQuantity", info, "Масса брутто");
+                                                    search("catESAD_cu:NetWeightQuantity", info, "Масса нетто");
+                                                    search("catESAD_cu:InvoicedCost", info, "Фактурная стоимость");
+                                                    search("catESAD_cu:CustomsCost", info, "Таможенная стоимость");
+                                                    foreach (XmlNode product in info.ChildNodes)
+                                                    {
+                                                        search("catESAD_cu:GoodsDescription", product, "Описание товара");
+                                                        foreach (XmlNode count in product.ChildNodes)
+                                                        {
+                                                            if (count.Name == "catESAD_cu:GoodsGroupInformation")
+                                                                foreach (XmlNode about in count)
+                                                                    if (about.Name == "catESAD_cu:GoodsGroupQuantity")
+                                                                        search("cat_ru:GoodsQuantity", about, "Количество товара");
+                                                        }
+                                                    }
+                                                    foreach (XmlNode doc in info)
+                                                    {
+                                                        if (doc.Name == "ESADout_CUPresentedDocument")
+                                                        {
+                                                            search("cat_ru:PrDocumentName", doc, "Документ");
+                                                            search("cat_ru:PrDocumentNumber", doc, "Номер документа");
 
+                                                        }
+                                                    }
+                                                }
+                                                
+                                                
+
+                                            }
+
+                                        }
+                                    }
                                 }
                             }
-                        }
-                    }
                 }
-
-
-
-
             }
+        }
+        public Information(string path)
+        {
+            InitializeComponent();
+            XmlHandler(path);
         }
     }
 }
