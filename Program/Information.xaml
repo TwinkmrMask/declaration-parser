@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:WpfApp3"
         mc:Ignorable="d"
         Title="Information" Height="450" Width="800">
-    <ScrollViewer>
-        <TextBlock x:Name="block"/>
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <TextBox x:Name="block" IsReadOnly="True"/>
     </ScrollViewer>
 </Window>

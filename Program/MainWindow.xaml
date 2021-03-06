@@ -8,9 +8,7 @@
         mc:Ignorable="d"
         Title="" Height="450" Width="422.666">
     <Grid>
-        <ScrollViewer Background="Transparent">
-
-
+        <ScrollViewer Background="Transparent" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <DataGrid x:Name="Data" GridLinesVisibility="None"  Background="White" RowBackground="Transparent" CanUserAddRows="False">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn>
@@ -22,8 +20,6 @@
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
-
-
         </ScrollViewer>
     </Grid>
 

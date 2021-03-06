@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
-using System.Xml;
 using System.IO;
+using System.Xml;
+
 
 namespace WpfApp3
 {
@@ -23,7 +26,7 @@ namespace WpfApp3
         }
         private void sort(in string[] path)
         {
-            GetId(in path);
+            getId(in path);
             for(int i = 0; i < ID.Count-1;)
             {
                 for(int j = i; j < ID.Count-1;)
@@ -38,13 +41,13 @@ namespace WpfApp3
                 i++;
             }
         }
-        private void GetId(in string[] path)
+        private void getId(in string[] path)
         {
-            GetFile(in path);
-            foreach (string item in FileNames) ID.Add(GetName(in path, item));
+            getFile(in path);
+            foreach (string item in FileNames) ID.Add(getName(in path, item));
 
         }
-        private string GetName(in string[] path, string name)
+        private string getName(in string[] path, string name)
         {
             XmlDocument document = new XmlDocument();
             
@@ -63,25 +66,39 @@ namespace WpfApp3
                     }
                     else return null;
 
-
                 }
                 else return null;
             }
             return null;
         }
-        private void GetFile(in string[] path)
+        private void getFile(in string[] path)
         {
-            IEnumerable<string> allfiles = Directory.EnumerateFiles(path[0].Replace(path[1],""), "*.xml");
+            IEnumerable<string> allfiles = Directory.EnumerateFiles(path[0].Replace(path[1], ""), "*.xml");
             foreach (string filename in allfiles) FileNames.Add(filename);
         }
         private void setSource()
         {
-            string[] path = getPath();
-            sort(in path);
-            List<Declarations> declarations = new List<Declarations>();
-            foreach (string item in FileNames)
-                declarations.Add(new Declarations { FileName = item, DocumentID = GetName(in path, item) });
-            Data.ItemsSource = declarations;
+            try
+            {
+                string[] path = getPath();
+                if (path.Any(values => string.IsNullOrWhiteSpace(values))) {
+                    throw new Exception();
+                }
+                else {
+                    sort(in path);
+                    List<Declarations> declarations = new List<Declarations>();
+                    foreach (string item in FileNames)
+                        declarations.Add(new Declarations { FileName = item, DocumentID = getName(in path, item) });
+                    Data.ItemsSource = declarations;
+                }
+            }
+            catch (Exception e)
+            {
+                if (MessageBox.Show("Выберите файл или закройте приложение", "Error", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.OK)
+                    setSource();
+                else
+                    this.Close();
+            }
         }
         public MainWindow()
         {
