@@ -19,10 +19,11 @@ namespace WpfApp3
 
 
         //pepper with crutches
-        List<List<string>> awb = new List<List<string>>();
+        List<(string, string)> awb = new List<(string,string)>();
         void add(string[] pair)
         {
-            awb.Add(new string[] { pair[0], pair[1] });            
+            if(!awb.Contains((pair[0], pair[1])))
+                awb.Add((pair[0], pair[1]));  
         }
         bool checkDocumentCode(string[] number) 
         {
@@ -134,9 +135,9 @@ namespace WpfApp3
                 print(new string[] { "Всего позиций", positions.ToString() });
             }
 
-            foreach (List<string> pair in awb.Distinct())
+            foreach ((string, string) pair in awb.Distinct())
             {
-                print(new string[] { pair[0], pair[1]});
+                print(new string[] { pair.Item1, pair.Item2});
             }
         }
         public Information(string path)
