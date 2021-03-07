@@ -78,11 +78,11 @@ namespace WpfApp3
         }
         private void setSource()
         {
-            try
-            {
+           try
+           {
                 string[] path = getPath();
                 if (path.Any(values => string.IsNullOrWhiteSpace(values))) {
-                    throw new Exception();
+                    throw new System.IO.IOException("Null path");
                 }
                 else {
                     sort(in path);
@@ -92,18 +92,20 @@ namespace WpfApp3
                     Data.ItemsSource = declarations;
                 }
             }
-            catch (Exception e)
+            
+            catch (System.IO.IOException e) when (e.Message == "Null path")
             {
                 if (MessageBox.Show("Выберите файл или закройте приложение", "Error", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.OK)
                     setSource();
                 else
                     this.Close();
             }
+            
         }
         public MainWindow()
         {
-            InitializeComponent();
-            setSource();
+                InitializeComponent();
+                setSource();
         }
         private void Btn_Click(object sender, RoutedEventArgs e)
         {

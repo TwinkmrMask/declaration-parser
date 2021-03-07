@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Xml;
+using System;
 
 namespace WpfApp3
 {
@@ -10,18 +11,33 @@ namespace WpfApp3
     /// </summary>
     public partial class Information : Window
     {
+        
+        double netWeightQuantity;
+        double grossWeightQuantity;
+        double positions;
+        List<string> transportDocumentCodes;
+
+
         //pepper with crutches
-        Dictionary<string, string> awb = new Dictionary<string, string>();
+        List<List<string>> awb = new List<List<string>>();
         void add(string[] pair)
         {
-            awb.Add(pair[0], pair[1]);
-            
+            awb.Add(new string[] { pair[0], pair[1] });            
         }
-
+        bool checkDocumentCode(string[] number) 
+        {
+            if (transportDocumentCodes.Contains(number[1]))
+                return true;
+            else return false;
+        }
+        void calc(string[] value, ref double result) 
+        {
+            result +=double.Parse(value[1], System.Globalization.CultureInfo.InvariantCulture);
+        }
         void print(string[] value)
         {
             if(value != null)
-            block.Text += $"{value[0]} - {value[1]}\n";
+                block.Text += $"{value[0]} - {value[1]}\n";
         }
         string[] search(string value, XmlNode collection, string name)
         {
@@ -50,7 +66,10 @@ namespace WpfApp3
                                     {
                                         if (general.Name == "ESADout_CUGoodsShipment")
                                         {
-                                            print(search("catESAD_cu:TotalPackageNumber", general, "Количество мест"));
+                                            {
+                                                print(search("catESAD_cu:TotalPackageNumber", general, "Количество мест"));
+                                                print(search("catESAD_cu:TotalCustCost", general, "Итоговая таможенная стоимоть"));
+                                            }
                                             foreach (XmlNode info in general.ChildNodes)
                                             {
                                                 if (info.Name == "ESADout_CUGoodsLocation") print(search("CustomsOffice", info, "Пост прибытия"));
@@ -59,21 +78,21 @@ namespace WpfApp3
                                                 {
                                                     print(search("catESAD_cu:ContractCurrencyCode", info, "Валюта"));
                                                     print(search("catESAD_cu:ContractCurrencyRate", info, "Курс"));
+                                                    print(search("ESADout_CUMainContractTerms", info, "Итоговая фактурная стоимоть"));
                                                 }
                                                 if (info.Name == "ESADout_CUGoods")
-                                                {                                                  
-                                                    print(search("catESAD_cu:GrossWeightQuantity", info, "Масса брутто"));
-                                                    print(search("catESAD_cu:NetWeightQuantity", info, "Масса нетто"));
-                                                    print(search("catESAD_cu:InvoicedCost", info, "Фактурная стоимость"));
-                                                    print(search("catESAD_cu:CustomsCost", info, "Таможенная стоимость"));
+                                                {
+                                                    {
+                                                        calc(search("catESAD_cu:GrossWeightQuantity", info, "Масса брутто"), ref grossWeightQuantity);
+                                                        calc(search("catESAD_cu:NetWeightQuantity", info, "Масса нетто"), ref netWeightQuantity);
+                                                    }
                                                     foreach (XmlNode product in info.ChildNodes)
                                                     {
-                                                        print(search("catESAD_cu:GoodsDescription", product, "Описание товара"));
                                                         foreach (XmlNode count in product.ChildNodes)
                                                             if (count.Name == "catESAD_cu:GoodsGroupInformation")
                                                                 foreach (XmlNode about in count)
                                                                     if (about.Name == "catESAD_cu:GoodsGroupQuantity")
-                                                                        print(search("cat_ru:GoodsQuantity", about, "Количество товара"));
+                                                                        calc(search("cat_ru:GoodsQuantity", about, "Количество товара"), ref positions);
                                                         
                                                     }
                                                     foreach (XmlNode doc in info)
@@ -82,13 +101,14 @@ namespace WpfApp3
                                                         {
                                                             try
                                                             {
-                                                                add(search("cat_ru:PrDocumentName", doc, "Документ"));
-                                                                add(search("cat_ru:PrDocumentNumber", doc, "Номер документа"));
-                                                                break;
+                                                                if (checkDocumentCode(search("catESAD_cu:PresentedDocumentModeCode", doc, "Классификационный номер документа")))
+                                                                {
+                                                                    add(search("cat_ru:PrDocumentName", doc, "Документ"));
+                                                                    add(search("cat_ru:PrDocumentNumber", doc, "Номер документа"));
+                                                                }
                                                             }
                                                             catch (System.ArgumentException exp)
                                                             {
-                                                                break;
                                                                 /*
                                                                 ╲╲┏━╮╲╲╲╱╱╱╭━┓╱╱
                                                                 ╲╲┣╮┃╲╲╲╱╱╱┃╭┫╱╱
@@ -101,24 +121,48 @@ namespace WpfApp3
                                                         }
                                                     }
                                                 }
-                                                
-                                                
-
                                             }
-
                                         }
                                     }
                                 }
                             }
                 }
             }
-            foreach (KeyValuePair<string,string> pair in awb)
-                block.Text += $"{pair.Key} {pair.Value}\n";
+            {
+                print(new string[] { "Общая масса брутто", grossWeightQuantity.ToString() });
+                print(new string[] { "Общая масса нетто", netWeightQuantity.ToString() });
+                print(new string[] { "Всего позиций", positions.ToString() });
+            }
+
+            foreach (List<string> pair in awb.Distinct())
+            {
+                print(new string[] { pair[0], pair[1]});
+            }
         }
         public Information(string path)
         {
-            InitializeComponent();
-            XmlHandler(path);
+            try
+            {
+                this.grossWeightQuantity = 0;
+                this.netWeightQuantity = 0;
+                this.positions = 0;
+                this.transportDocumentCodes = new List<string>()
+                {
+                    "02011", "02012", "02013", 
+                    "02014", "02015", "02016", 
+                    "02017", "02018", "02019",
+                    "02020", "02021", "02022",
+                    "02024", "02025", "02099"
+                };
+                InitializeComponent();
+                XmlHandler(path);
+            }
+            finally 
+            {
+                this.grossWeightQuantity = 0;
+                this.netWeightQuantity = 0;
+                this.positions = 0;
+            }
         }
     }
 }
