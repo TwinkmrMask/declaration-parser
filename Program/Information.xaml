@@ -7,6 +7,9 @@
         mc:Ignorable="d"
         Title="Information" Height="450" Width="800">
     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-        <TextBox x:Name="block" IsReadOnly="True"/>
+        <Grid>
+            <TextBox x:Name="block" IsReadOnly="True"/>
+            <Button x:Name="btn" Margin="80,0" Content="Открыть в MS Excel" Background="Azure" Height="52" VerticalAlignment="Bottom" FontFamily="Times New Roman" FontSize="14" Click="btn_Click"/>
+        </Grid>
     </ScrollViewer>
 </Window>
