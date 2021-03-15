@@ -47,7 +47,7 @@ namespace WpfApp3
         }
 
         void close(IWorkbook wb)
-        {            
+        {
             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
 
             using (FileStream fs = new FileStream(path + name, FileMode.Create, FileAccess.Write))
@@ -63,7 +63,7 @@ namespace WpfApp3
         }
         IWorkbook save(in string[] row, (IWorkbook, ISheet) book)
         {
-            if(row != null)
+            if (row != null)
             {
                 print(row);
                 IRow currentRow = book.Item2.CreateRow(book.Item2.LastRowNum + 1);
@@ -131,62 +131,60 @@ namespace WpfApp3
                                         }
                                         foreach (XmlNode info in general.ChildNodes)
                                         {
-                                            if (info.Name == "ESADout_CUGoodsLocation")
+                                            switch (info.Name)
                                             {
-                                                save(search("CustomsOffice", info, "Пост прибытия"), book); 
-                                            }
-                                            if (info.Name == "ESADout_CUConsigment")
-                                            {
-                                                foreach(XmlNode transport in info.ChildNodes)
-                                                    save(search("catESAD_cu:TransportIdentifier", info, "Транспорт"), book);
-                                            }
-                                            if (info.Name == "ESADout_CUMainContractTerms")
-                                            {
-                                                save(search("catESAD_cu:ContractCurrencyCode", info, "Валюта"), book);
-                                                save(search("catESAD_cu:ContractCurrencyRate", info, "Курс"), book);
-                                                save(search("ESADout_CUMainContractTerms", info, "Итоговая фактурная стоимоть"), book);
-                                            }
-                                            if (info.Name == "ESADout_CUGoods")
-                                            {
-                                                {
+                                                case "ESADout_CUGoodsLocation":
+                                                    save(search("CustomsOffice", info, "Пост прибытия"), book);
+                                                    break;
+
+                                                case "ESADout_CUConsigment":
+                                                    foreach (XmlNode transport in info.ChildNodes)
+                                                        save(search("catESAD_cu:TransportIdentifier", info, "Транспорт"), book);
+                                                    break;
+                                                case "ESADout_CUMainContractTerms":
+                                                    save(search("catESAD_cu:ContractCurrencyCode", info, "Валюта"), book);
+                                                    save(search("catESAD_cu:ContractCurrencyRate", info, "Курс"), book);
+                                                    save(search("ESADout_CUMainContractTerms", info, "Итоговая фактурная стоимоть"), book);
+                                                    break;
+                                                case "ESADout_CUGoods":
                                                     calc(search("catESAD_cu:GrossWeightQuantity", info, "Масса брутто"), ref grossWeightQuantity);
                                                     calc(search("catESAD_cu:NetWeightQuantity", info, "Масса нетто"), ref netWeightQuantity);
-                                                }
-                                                foreach (XmlNode product in info.ChildNodes)
+                                                    break;
+                                                default: break;
+                                            }
+                                            foreach (XmlNode product in info.ChildNodes)
+                                            {
+                                                foreach (XmlNode count in product.ChildNodes)
+                                                    if (count.Name == "catESAD_cu:GoodsGroupInformation")
+                                                        foreach (XmlNode about in count)
+                                                            if (about.Name == "catESAD_cu:GoodsGroupQuantity")
+                                                                calc(search("cat_ru:GoodsQuantity", about, "Количество товара"), ref positions);
+                                            }
+                                            foreach (XmlNode doc in info)
+                                            {
+                                                if (doc.Name == "ESADout_CUPresentedDocument")
                                                 {
-                                                    foreach (XmlNode count in product.ChildNodes)
-                                                        if (count.Name == "catESAD_cu:GoodsGroupInformation")
-                                                            foreach (XmlNode about in count)
-                                                                if (about.Name == "catESAD_cu:GoodsGroupQuantity")
-                                                                    calc(search("cat_ru:GoodsQuantity", about, "Количество товара"), ref positions);
-                                                }
-                                                foreach (XmlNode doc in info)
-                                                {
-                                                    if (doc.Name == "ESADout_CUPresentedDocument")
+                                                    try
                                                     {
-                                                        try
+                                                        if (checkDocumentCode(search("catESAD_cu:PresentedDocumentModeCode", doc, "Классификационный номер документа")))
                                                         {
-                                                            if (checkDocumentCode(search("catESAD_cu:PresentedDocumentModeCode", doc, "Классификационный номер документа")))
-                                                            {
-                                                                add(search("cat_ru:PrDocumentName", doc, "Документ"));
-                                                                add(search("cat_ru:PrDocumentNumber", doc, "Номер документа"));
-                                                            }
+                                                            add(search("cat_ru:PrDocumentName", doc, "Документ"));
+                                                            add(search("cat_ru:PrDocumentNumber", doc, "Номер документа"));
                                                         }
-                                                        catch (System.ArgumentException)
-                                                        {
-                                                            /*
-                                                            ╲╲┏━╮╲╲╲╱╱╱╭━┓╱╱
-                                                            ╲╲┣╮┃╲╲╲╱╱╱┃╭┫╱╱
-                                                            ╲╲┣╯╰┻┻┻┻┻┻╯╰┫╱╱
-                                                            ╲╲┃╱┈┈╲┊┊╱┈┈╲┃╱╱
-                                                            ╲╲┃╰┳┳╯◢◣╰┳┳╯┃╱╱
-                                                            ╲╲╰━━━╰━━╯━━━╯╱╱
-                                                            */
-                                                        }
+                                                    }
+                                                    catch (System.ArgumentException)
+                                                    {
+                                                        /*
+                                                        ╲╲┏━╮╲╲╲╱╱╱╭━┓╱╱
+                                                        ╲╲┣╮┃╲╲╲╱╱╱┃╭┫╱╱
+                                                        ╲╲┣╯╰┻┻┻┻┻┻╯╰┫╱╱
+                                                        ╲╲┃╱┈┈╲┊┊╱┈┈╲┃╱╱
+                                                        ╲╲┃╰┳┳╯◢◣╰┳┳╯┃╱╱
+                                                        ╲╲╰━━━╰━━╯━━━╯╱╱
+                                                        */
                                                     }
                                                 }
                                             }
-
                                         }
                                     }
                                 }
@@ -194,18 +192,14 @@ namespace WpfApp3
                 }
             }
             {
-             
                 save(new string[] { "Общая масса брутто", grossWeightQuantity.ToString() }, book);
                 save(new string[] { "Общая масса нетто", netWeightQuantity.ToString() }, book);
                 save(new string[] { "Всего позиций", positions.ToString() }, book);
             }
             foreach ((string, string) pair in awb.Distinct())
-            {
                 save(new string[] { pair.Item1, pair.Item2 }, book);
-            }
             close(book.Item1);
         }
-
         private void btn_Click(object sender, RoutedEventArgs e)
         {
             Type officeType = Type.GetTypeFromProgID("Excel.Application");
@@ -229,7 +223,7 @@ namespace WpfApp3
                 }
             }
 
-            
+
         }
     }
 }
