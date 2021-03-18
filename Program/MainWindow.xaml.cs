@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.IO;
@@ -11,7 +10,7 @@ namespace WpfApp3
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         List<string> FileNames = new List<string>();
         List<string> ID = new List<string>();
@@ -27,11 +26,11 @@ namespace WpfApp3
         private void sort(in string[] path)
         {
             getId(in path);
-            for(int i = 0; i < ID.Count-1;)
+            for (int i = 0; i < ID.Count - 1;)
             {
-                for(int j = i; j < ID.Count-1;)
+                for (int j = i; j < ID.Count - 1;)
                 {
-                    if(ID[i] == ID[j + 1])
+                    if (ID[i] == ID[j + 1])
                     {
                         ID.Remove(ID[j + 1]);
                         FileNames.Remove(FileNames[j + 1]);
@@ -50,7 +49,7 @@ namespace WpfApp3
         private string getName(in string[] path, string name)
         {
             XmlDocument document = new XmlDocument();
-            
+
             document.Load(path[0]);
 
             XmlElement root = document.DocumentElement;
@@ -78,13 +77,15 @@ namespace WpfApp3
         }
         private void setSource()
         {
-           try
-           {
+            try
+            {
                 string[] path = getPath();
-                if (path.Any(values => string.IsNullOrWhiteSpace(values))) {
+                if (path.Any(values => string.IsNullOrWhiteSpace(values)))
+                {
                     throw new System.IO.IOException("Null path");
                 }
-                else {
+                else
+                {
                     sort(in path);
                     List<Declarations> declarations = new List<Declarations>();
                     foreach (string item in FileNames)
@@ -92,7 +93,6 @@ namespace WpfApp3
                     Data.ItemsSource = declarations;
                 }
             }
-            
             catch (System.IO.IOException e) when (e.Message == "Null path")
             {
                 if (MessageBox.Show("Выберите файл или закройте приложение", "Error", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.OK)
@@ -100,18 +100,17 @@ namespace WpfApp3
                 else
                     this.Close();
             }
-            
+
         }
         public MainWindow()
         {
-                InitializeComponent();
-                setSource();
+            InitializeComponent();
+            setSource();
         }
         private void Btn_Click(object sender, RoutedEventArgs e)
         {
             Declarations path = Data.SelectedItem as Declarations;
-            Information info = new Information(path.FileName);
-            info.Show();
+            Handler info = new Handler(path.FileName);
         }
     }
 }
