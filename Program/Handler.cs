@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
-using System.Diagnostics;
 using System.IO;
-using System.Windows;
 using System.Xml;
-
-namespace WpfApp3
+using database;
+namespace xmlparser
 {
     class Handler : DefaultSettings
     {
         double netWeightQuantity;
         double grossWeightQuantity;
         double positions;
-        DataBase data;
-        Information information;
+        //Information information;
         List<(string, string)> awb;
         public Handler(string path)
         {
@@ -26,7 +22,8 @@ namespace WpfApp3
                 this.netWeightQuantity = 0;
                 this.positions = 0;
                 this.awb = new List<(string, string)>();
-                this.information = new Information();
+                var information = new Information(defaultPath, nameExcelFile).ShowDialog();
+                //information.ShowDialog();
                 xmlHandler(path);
             }
             finally
@@ -36,10 +33,9 @@ namespace WpfApp3
                 this.positions = default;
             }
         }
-
         void close(IWorkbook wb, string path, string name)
         {
-            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+            if (!Directory.Exists(defaultPath)) Directory.CreateDirectory(defaultPath);
             using (FileStream fs = new FileStream(path + name, FileMode.Create, FileAccess.Write))
                 wb.Write(fs);
             wb.Close();
@@ -73,12 +69,13 @@ namespace WpfApp3
         }
         bool checkDocumentCode(string[] number)
         {
-            return data.TransportCodeEach(number[1]);
+            using (DataBase data = new DataBase(indexFileName, dataFileName, defaultPath))
+                return data.TransportCodeEach(number[1]);
         }
         void calc(string[] value, ref double result)
         {
             result += double.Parse(value[1], System.Globalization.CultureInfo.InvariantCulture);
-        }   
+        }
         string[] search(string value, XmlNode collection, string name)
         {
             foreach (XmlNode element in collection.ChildNodes)
@@ -88,6 +85,7 @@ namespace WpfApp3
         }
         void xmlHandler(string path)
         {
+            addTransportCodes();
             XmlDocument document = new XmlDocument();
             document.Load(path);
 
@@ -182,6 +180,6 @@ namespace WpfApp3
                 save(new string[] { pair.Item1, pair.Item2 }, book);
             close(book.Item1, path, nameExcelFile);
         }
-        
+
     }
 }

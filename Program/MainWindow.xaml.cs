@@ -3,17 +3,13 @@ using System.Linq;
 using System.Windows;
 using System.IO;
 using System.Xml;
-
-
-namespace WpfApp3
+namespace xmlparser
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class MainWindow
     {
         List<string> FileNames = new List<string>();
         List<string> ID = new List<string>();
+
         string[] getPath()
         {
             Microsoft.Win32.OpenFileDialog openDialog = new Microsoft.Win32.OpenFileDialog();
@@ -44,7 +40,6 @@ namespace WpfApp3
         {
             getFile(in path);
             foreach (string item in FileNames) ID.Add(getName(in path, item));
-
         }
         private string getName(in string[] path, string name)
         {
@@ -58,7 +53,6 @@ namespace WpfApp3
             {
                 if (item.HasChildNodes)
                 {
-
                     if (item.Name == "cat_ru:DocumentID")
                     {
                         return item.InnerText;
@@ -87,12 +81,13 @@ namespace WpfApp3
                 else
                 {
                     sort(in path);
-                    List<Declarations> declarations = new List<Declarations>();
+                    List<Content> declarations = new List<Content>();
                     foreach (string item in FileNames)
-                        declarations.Add(new Declarations { FileName = item, DocumentID = getName(in path, item) });
+                        declarations.Add(new Content { FileName = item, DocumentID = getName(in path, item) });
                     Data.ItemsSource = declarations;
                 }
             }
+
             catch (System.IO.IOException e) when (e.Message == "Null path")
             {
                 if (MessageBox.Show("Выберите файл или закройте приложение", "Error", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.OK)
@@ -100,7 +95,6 @@ namespace WpfApp3
                 else
                     this.Close();
             }
-
         }
         public MainWindow()
         {
@@ -109,8 +103,8 @@ namespace WpfApp3
         }
         private void Btn_Click(object sender, RoutedEventArgs e)
         {
-            Declarations path = Data.SelectedItem as Declarations;
-            Handler info = new Handler(path.FileName);
+            var xmlFilePath = Data.SelectedItem as Content;
+            Handler info = new Handler(xmlFilePath.FileName);
         }
     }
 }

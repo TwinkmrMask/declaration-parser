@@ -12,7 +12,7 @@ using Platform.Data.Doublets.Sequences.Converters;
 using Platform.Data.Doublets.CriterionMatchers;
 using Platform.Data.Doublets.Memory.Split.Specific;
 using TLinkAddress = System.UInt32;
-namespace WpfApp3
+namespace database
 {
     //Part of the code, along with comments, is taken from https://github.com/linksplatform/Comparisons.SQLiteVSDoublets/commit/289cf361c82ab605b9ba0d1621496b3401e432f7
     public class DataBase : DisposableBase
@@ -67,7 +67,7 @@ namespace WpfApp3
         public TLinkAddress ConvertToSequence(string @string) => _stringToUnicodeSequenceConverter.Convert(@string);
         public void Delete(TLinkAddress link) => links.Delete(link);
         public TLinkAddress CreateTransportCodeLink(string transportDocumentCode)
-        {   
+        {
             var Link = ConvertToSequence(transportDocumentCode);
             return this.links.GetOrCreate(this.links.Constants.Itself, Link);
         }
