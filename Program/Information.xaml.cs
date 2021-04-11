@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Threading;
 using System.Windows;
 
 namespace xmlparser
@@ -33,29 +35,36 @@ namespace xmlparser
 
         private void OpenInExcel_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("ru-ru");
             try
             {
-                MessageBox.Show(Path.GetFullPath(this.handler.Path()));
                 Process.Start(Path.GetFullPath(this.handler.Path()));
             }
-            /*
-            if (officeType == null)
+            catch (System.ComponentModel.Win32Exception)
             {
-                MessageBox.Show(
-                    "Похоже MS Excel не установлен на Вашем пк,\n Вы можете скопировать содержимое текстового поля\nили прекратить операцию",
-                    "Warning",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
-            }
-            
-            else
-            {
-            */
-                catch (Exception exception)
+                var result = MessageBox.Show(
+                    "Невозможно запустить файл на этом устройстве,\n" +
+                    "Вы можете скопировать данные из текстового окна\n" +
+                    "Да - скопировать текст в буфер обмена\n" +
+                    "Нет - текст не скопируется, а это сообщение закроется\n" +
+                    "Отмена - текст не скопируется, а приложение закроется",
+                    "Error", 
+                    MessageBoxButton.YesNoCancel, 
+                    MessageBoxImage.Error);
+                switch (result)
                 {
-                    MessageBox.Show(exception.Message);
+                    case MessageBoxResult.Yes:
+                        Clipboard.SetText(block.Text);
+                        break;
+                    case MessageBoxResult.No:
+                        //nothing
+                        break;
+                    case MessageBoxResult.Cancel:
+                        this.Close();
+                        break;
                 }
-            //}
+                    
+            }
         }
     }
 }

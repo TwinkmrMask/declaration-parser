@@ -116,7 +116,7 @@ namespace xmlparser
             }
             foreach ((string, string) pair in awb.Distinct())
                 collect(pair, book);
-            close(book.Item1, path, nameExcelFile);
+            close(book.Item1, defaultPath, nameExcelFile);
             return this.data;
         }
 
@@ -124,8 +124,11 @@ namespace xmlparser
         private void close(IWorkbook wb, string path, string name)
         {
             if (!Directory.Exists(defaultPath)) Directory.CreateDirectory(defaultPath);
-            using (FileStream fs = new FileStream(path + name, FileMode.Create, FileAccess.Write))
+            using (FileStream fs = new FileStream(Path(), FileMode.Create, FileAccess.Write))
+            {
                 wb.Write(fs);
+                fs.Close();
+            }
             wb.Close();
         }
         private (IWorkbook, ISheet) open()

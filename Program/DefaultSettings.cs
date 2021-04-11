@@ -3,7 +3,7 @@ namespace database
 {
     public abstract class DefaultSettings
     {
-        protected static readonly string defaultPath = "../../Resources/";
+        protected static readonly string defaultPath = "../../../Resources/";
         protected static readonly string nameExcelFile = "declarationInfo.xlsx";
         protected static readonly string indexFileName = "links";
         protected static readonly string dataFileName = "db";
