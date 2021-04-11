@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using Platform.IO;
+﻿using Platform.IO;
 using Platform.Data.Doublets.Memory.United.Generic;
 using Platform.Data.Doublets.Xml;
 using Platform.Data.Doublets;

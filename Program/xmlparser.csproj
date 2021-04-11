@@ -12,10 +12,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="button.png" />
+    <None Remove="Resources\button.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.3" />
     <PackageReference Include="Platform.Data" Version="0.3.0" />
     <PackageReference Include="Platform.Data.Doublets" Version="0.6.7" />
     <PackageReference Include="Platform.Data.Doublets.Xml" Version="0.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="button.png" />
+    <Resource Include="Resources\button.png" />
   </ItemGroup>
 
   <ItemGroup>

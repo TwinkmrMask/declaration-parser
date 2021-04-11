@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.IO;
 using System.Xml;
+using database;
 namespace xmlparser
 {
     public partial class MainWindow
@@ -19,22 +20,15 @@ namespace xmlparser
             string path = openDialog.FileName;
             return new string[] { path, fileName };
         }
+        void put(string fileName)
+        {
+            XmlAdapter adapter = new XmlAdapter(fileName);
+            adapter.Run();
+        }
         private void sort(in string[] path)
         {
             getId(in path);
-            for (int i = 0; i < ID.Count - 1;)
-            {
-                for (int j = i; j < ID.Count - 1;)
-                {
-                    if (ID[i] == ID[j + 1])
-                    {
-                        ID.Remove(ID[j + 1]);
-                        FileNames.Remove(FileNames[j + 1]);
-                    }
-                    j++;
-                }
-                i++;
-            }
+            ID.Distinct();
         }
         private void getId(in string[] path)
         {
@@ -81,6 +75,7 @@ namespace xmlparser
                 else
                 {
                     sort(in path);
+                    put(path[0]);
                     List<Content> declarations = new List<Content>();
                     foreach (string item in FileNames)
                         declarations.Add(new Content { FileName = item, DocumentID = getName(in path, item) });
@@ -103,8 +98,9 @@ namespace xmlparser
         }
         private void Btn_Click(object sender, RoutedEventArgs e)
         {
-            var xmlFilePath = Data.SelectedItem as Content;
-            Handler info = new Handler(xmlFilePath.FileName);
+            Content path = Data.SelectedItem as Content;
+            Information info = new Information(path.FileName);
+            info.Show();
         }
     }
 }
