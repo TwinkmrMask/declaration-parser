@@ -1,4 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Windows;
+
 namespace xmlparser
 {
     public partial class Information
@@ -26,5 +31,31 @@ namespace xmlparser
         private void OpenInExcel_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e) => toolbarStatus("Открыть в MS Excel");
         private void OpenInExcel_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e) => toolbarStatus(null);
 
+        private void OpenInExcel_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            try
+            {
+                MessageBox.Show(Path.GetFullPath(this.handler.Path()));
+                Process.Start(Path.GetFullPath(this.handler.Path()));
+            }
+            /*
+            if (officeType == null)
+            {
+                MessageBox.Show(
+                    "Похоже MS Excel не установлен на Вашем пк,\n Вы можете скопировать содержимое текстового поля\nили прекратить операцию",
+                    "Warning",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            }
+            
+            else
+            {
+            */
+                catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message);
+                }
+            //}
+        }
     }
 }

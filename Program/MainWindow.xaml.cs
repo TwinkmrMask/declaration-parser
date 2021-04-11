@@ -20,11 +20,7 @@ namespace xmlparser
             string path = openDialog.FileName;
             return new string[] { path, fileName };
         }
-        void put(string fileName)
-        {
-            XmlAdapter adapter = new XmlAdapter(fileName);
-            adapter.Run();
-        }
+        //void put(string fileName) => XmlAdapter adapter = new XmlAdapter(fileName);
         private void sort(in string[] path)
         {
             getId(in path);
@@ -75,7 +71,7 @@ namespace xmlparser
                 else
                 {
                     sort(in path);
-                    put(path[0]);
+                    //put(path[0]);
                     List<Content> declarations = new List<Content>();
                     foreach (string item in FileNames)
                         declarations.Add(new Content { FileName = item, DocumentID = getName(in path, item) });

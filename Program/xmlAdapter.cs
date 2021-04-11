@@ -13,8 +13,9 @@ namespace database
         public XmlAdapter(string xmlFileName)
         {
             this.xmlFileName = xmlFileName;
+            Run();
         }
-        public void Run(params string[] args)
+        private void Run(params string[] args)
         {
             var linksFile = ConsoleHelpers.GetOrReadArgument(0, indexFileName, args);
             var file = ConsoleHelpers.GetOrReadArgument(1, xmlFileName, args);
