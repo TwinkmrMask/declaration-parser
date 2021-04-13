@@ -13,7 +13,7 @@ namespace database
         public XmlAdapter(string xmlFileName)
         {
             this.xmlFileName = xmlFileName;
-            Run();
+            Run(new string[] { xmlFileName, indexFileName });
         }
         private void Run(params string[] args)
         {

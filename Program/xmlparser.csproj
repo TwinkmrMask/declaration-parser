@@ -12,7 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="button.png" />
     <None Remove="Resources\button.png" />
   </ItemGroup>
 
@@ -24,7 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="button.png" />
     <Resource Include="Resources\button.png" />
   </ItemGroup>
 

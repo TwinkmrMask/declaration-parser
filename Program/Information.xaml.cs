@@ -32,7 +32,6 @@ namespace xmlparser
         //toolbar status
         private void OpenInExcel_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e) => toolbarStatus("Открыть в MS Excel");
         private void OpenInExcel_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e) => toolbarStatus(null);
-
         private void OpenInExcel_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("ru-ru");
@@ -47,7 +46,7 @@ namespace xmlparser
                     "Вы можете скопировать данные из текстового окна\n" +
                     "Да - скопировать текст в буфер обмена\n" +
                     "Нет - текст не скопируется, а это сообщение закроется\n" +
-                    "Отмена - текст не скопируется, а приложение закроется",
+                    "Отмена - текст не скопируется, а окно закроется",
                     "Error", 
                     MessageBoxButton.YesNoCancel, 
                     MessageBoxImage.Error);

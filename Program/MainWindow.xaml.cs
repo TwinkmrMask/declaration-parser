@@ -4,6 +4,8 @@ using System.Windows;
 using System.IO;
 using System.Xml;
 using database;
+using System;
+
 namespace xmlparser
 {
     public partial class MainWindow
@@ -11,77 +13,99 @@ namespace xmlparser
         List<string> FileNames = new List<string>();
         List<string> ID = new List<string>();
 
-        string[] getPath()
-        {
-            Microsoft.Win32.OpenFileDialog openDialog = new Microsoft.Win32.OpenFileDialog();
-            openDialog.Filter = "Файл Xml|*.Xml";
-            var result = openDialog.ShowDialog();
-            string fileName = System.IO.Path.GetFileName(openDialog.FileName);
-            string path = openDialog.FileName;
-            return new string[] { path, fileName };
-        }
-        //void put(string fileName) => XmlAdapter adapter = new XmlAdapter(fileName);
-        private void sort(in string[] path)
-        {
-            getId(in path);
-            ID.Distinct();
-        }
-        private void getId(in string[] path)
-        {
-            getFile(in path);
-            foreach (string item in FileNames) ID.Add(getName(in path, item));
-        }
-        private string getName(in string[] path, string name)
-        {
-            XmlDocument document = new XmlDocument();
+        void copy(string text) => Clipboard.SetText(text);
 
-            document.Load(path[0]);
-
-            XmlElement root = document.DocumentElement;
-
-            foreach (XmlElement item in root)
+        (string, string) getPath()
+        {
+            try
             {
-                if (item.HasChildNodes)
-                {
-                    if (item.Name == "cat_ru:DocumentID")
-                    {
-                        return item.InnerText;
-                    }
-                    else return null;
-
-                }
-                else return null;
+                Microsoft.Win32.OpenFileDialog openDialog = new Microsoft.Win32.OpenFileDialog();
+                openDialog.Filter = "Файл Xml|*.Xml";
+                var result = openDialog.ShowDialog();
+                string fileName = System.IO.Path.GetFileName(openDialog.FileName);
+                string path = openDialog.FileName;
+                return new (path, fileName);
             }
-            return null;
+            catch (Exception exception1)
+            {
+                if (MessageBox.Show( $"Ошибка - {exception1.HResult}\nНажмите OK чтобы скопировать код ошибки, или нажмите Отмена чтобы переписать самостоятельно",
+                    "Ошибка получения пути", MessageBoxButton.OKCancel,
+                    MessageBoxImage.Error) == MessageBoxResult.OK)
+                    copy(exception1.HResult.ToString());
+                return default;
+            }
         }
-        private void getFile(in string[] path)
+        
+        private void sort(in (string, string) path)
         {
-            IEnumerable<string> allfiles = Directory.EnumerateFiles(path[0].Replace(path[1], ""), "*.xml");
-            foreach (string filename in allfiles) FileNames.Add(filename);
+            try
+            {
+                getId(in path);
+                ID.Distinct();
+            }
+            catch (Exception exception2)
+            {
+                if (MessageBox.Show($"Ошибка - {exception2.HResult}\nНажмите OK чтобы скопировать код ошибки, или нажмите Отмена чтобы переписать самостоятельно",
+                    "Неизвестная ошибка", MessageBoxButton.OKCancel,
+                    MessageBoxImage.Error) == MessageBoxResult.OK)
+                    copy(exception2.HResult.ToString());
+            }
         }
+        private void getId(in (string, string) path)
+        {
+            try
+            {
+                getFile(in path);
+                foreach (string item in FileNames) ID.Add(path.Item2);
+            }
+            catch (Exception exception3)
+            {
+                if (MessageBox.Show($"Ошибка - {exception3.HResult}\nНажмите OK чтобы скопировать код ошибки, или нажмите Отмена чтобы переписать самостоятельно",
+                    "Неизвестная ошибка", MessageBoxButton.OKCancel,
+                    MessageBoxImage.Error) == MessageBoxResult.OK)
+                    copy(exception3.HResult.ToString());
+            }
+        }
+        
+        private void getFile(in (string, string) path)
+        {
+            try
+            {
+                IEnumerable<string> allfiles = Directory.EnumerateFiles(path.Item1.Replace(path.Item2, ""), "*.xml");
+                foreach (string filename in allfiles) FileNames.Add(filename);
+            }
+
+            catch (Exception exception4)
+            {
+                if (MessageBox.Show("Нажмите OK чтобы скопировать код ошибки, или нажмите Отмена чтобы переписать самостоятельно",
+                    "Ошибка получения файла", MessageBoxButton.OKCancel,
+                    MessageBoxImage.Error) == MessageBoxResult.OK)
+                    copy(exception4.HResult.ToString());
+
+            }
+        }
+
+
         private void setSource()
         {
             try
             {
-                string[] path = getPath();
-                if (path.Any(values => string.IsNullOrWhiteSpace(values)))
-                {
+                (string, string) path = getPath();
+                if (string.IsNullOrWhiteSpace(path.Item1) && string.IsNullOrWhiteSpace(path.Item2))
                     throw new System.IO.IOException("Null path");
-                }
                 else
                 {
                     sort(in path);
-                    //put(path[0]);
                     List<Content> declarations = new List<Content>();
                     foreach (string item in FileNames)
-                        declarations.Add(new Content { FileName = item, DocumentID = getName(in path, item) });
+                        declarations.Add(new Content { FileName = item, DocumentID = path.Item2 });
                     Data.ItemsSource = declarations;
                 }
             }
 
             catch (System.IO.IOException e) when (e.Message == "Null path")
             {
-                if (MessageBox.Show("Выберите файл или закройте приложение", "Error", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.OK)
+                if (MessageBox.Show("Выберите файл или закройте приложение", "Пустой путь", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.OK)
                     setSource();
                 else
                     this.Close();

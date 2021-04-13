@@ -180,7 +180,7 @@ namespace xmlparser
         }
         private bool validation((string, string) value)
         {
-            if ((value.Item1 == null) && (value.Item2 == null))
+            if (string.IsNullOrWhiteSpace(value.Item1) && string.IsNullOrWhiteSpace(value.Item2))
                 return false;
             else return true;
         }

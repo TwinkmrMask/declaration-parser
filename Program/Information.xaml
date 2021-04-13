@@ -12,6 +12,6 @@
         </ScrollViewer>
 
         <Label x:Name="toolbar" Background="Transparent" Height="44" VerticalAlignment="Bottom" Content="" FontSize="20" HorizontalAlignment="Left" Width="614"/>
-        <Image x:Name="OpenInExcel" Source="/button.png" StretchDirection="UpOnly" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="372" Width="137" MouseEnter="OpenInExcel_MouseEnter" MouseLeave="OpenInExcel_MouseLeave" OpacityMask="Black" MouseLeftButtonDown="OpenInExcel_MouseLeftButtonDown"/>
+        <Image x:Name="OpenInExcel" Source="/Resources/button.png" StretchDirection="UpOnly" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="372" Width="137" MouseEnter="OpenInExcel_MouseEnter" MouseLeave="OpenInExcel_MouseLeave" OpacityMask="Black" MouseLeftButtonDown="OpenInExcel_MouseLeftButtonDown"/>
     </Grid>
 </Window>
