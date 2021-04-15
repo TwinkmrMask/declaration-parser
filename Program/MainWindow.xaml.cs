@@ -6,25 +6,28 @@ using System.Xml;
 using database;
 using System;
 
+#pragma 
+
 namespace xmlparser
 {
     public partial class MainWindow
     {
         List<string> FileNames = new List<string>();
-        List<string> ID = new List<string>();
+        string directoryName;
+        string fileName;
 
         void copy(string text) => Clipboard.SetText(text);
 
-        (string, string) getPath()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Стили именования", Justification = "<Ожидание>")]
+        private void getPath(out string directoryName, out string fileName)
         {
             try
             {
                 Microsoft.Win32.OpenFileDialog openDialog = new Microsoft.Win32.OpenFileDialog();
-                openDialog.Filter = "Файл Xml|*.Xml";
+                openDialog.Filter = "Файл Xml|*.xml";
                 var result = openDialog.ShowDialog();
-                string fileName = System.IO.Path.GetFileName(openDialog.FileName);
-                string path = openDialog.FileName;
-                return new (path, fileName);
+                directoryName = System.IO.Path.GetDirectoryName(openDialog.FileName);
+                fileName = openDialog.FileName;
             }
             catch (Exception exception1)
             {
@@ -32,73 +35,41 @@ namespace xmlparser
                     "Ошибка получения пути", MessageBoxButton.OKCancel,
                     MessageBoxImage.Error) == MessageBoxResult.OK)
                     copy(exception1.HResult.ToString());
-                return default;
+                directoryName = default;
+                fileName = default;
             }
         }
         
-        private void sort(in (string, string) path)
+        private void getFile()
         {
             try
             {
-                getId(in path);
-                ID.Distinct();
-            }
-            catch (Exception exception2)
-            {
-                if (MessageBox.Show($"Ошибка - {exception2.HResult}\nНажмите OK чтобы скопировать код ошибки, или нажмите Отмена чтобы переписать самостоятельно",
-                    "Неизвестная ошибка", MessageBoxButton.OKCancel,
-                    MessageBoxImage.Error) == MessageBoxResult.OK)
-                    copy(exception2.HResult.ToString());
-            }
-        }
-        private void getId(in (string, string) path)
-        {
-            try
-            {
-                getFile(in path);
-                foreach (string item in FileNames) ID.Add(path.Item2);
-            }
-            catch (Exception exception3)
-            {
-                if (MessageBox.Show($"Ошибка - {exception3.HResult}\nНажмите OK чтобы скопировать код ошибки, или нажмите Отмена чтобы переписать самостоятельно",
-                    "Неизвестная ошибка", MessageBoxButton.OKCancel,
-                    MessageBoxImage.Error) == MessageBoxResult.OK)
-                    copy(exception3.HResult.ToString());
-            }
-        }
-        
-        private void getFile(in (string, string) path)
-        {
-            try
-            {
-                IEnumerable<string> allfiles = Directory.EnumerateFiles(path.Item1.Replace(path.Item2, ""), "*.xml");
+                IEnumerable<string> allfiles = Directory.EnumerateFiles(directoryName, "*.xml");
                 foreach (string filename in allfiles) FileNames.Add(filename);
             }
 
             catch (Exception exception4)
             {
-                if (MessageBox.Show("Нажмите OK чтобы скопировать код ошибки, или нажмите Отмена чтобы переписать самостоятельно",
-                    "Ошибка получения файла", MessageBoxButton.OKCancel,
+                if (MessageBox.Show($"Ошибка - {exception4.HResult}\nНажмите OK чтобы скопировать код ошибки, или нажмите Отмена чтобы переписать самостоятельно",
+                    "Неизвестная ошибка", MessageBoxButton.OKCancel,
                     MessageBoxImage.Error) == MessageBoxResult.OK)
                     copy(exception4.HResult.ToString());
 
             }
         }
-
-
         private void setSource()
         {
             try
             {
-                (string, string) path = getPath();
-                if (string.IsNullOrWhiteSpace(path.Item1) && string.IsNullOrWhiteSpace(path.Item2))
+                getPath(out this.directoryName, out this.fileName);
+                if ( new string[] { directoryName, fileName }.Any(values => string.IsNullOrWhiteSpace(values)))
                     throw new System.IO.IOException("Null path");
                 else
                 {
-                    sort(in path);
+                    getFile();
                     List<Content> declarations = new List<Content>();
                     foreach (string item in FileNames)
-                        declarations.Add(new Content { FileName = item, DocumentID = path.Item2 });
+                        declarations.Add(new Content { FileName = item });
                     Data.ItemsSource = declarations;
                 }
             }

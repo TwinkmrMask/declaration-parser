@@ -24,9 +24,9 @@ namespace xmlparser
         void start(string path) => print(this.handler.XmlHandler(path));
         void print(List<(string, string)> value)
         {
-            foreach((string, string) item in value)
-                if ((item.Item1 != null) || (item.Item2 != null))
-                    block.Text += $"{item.Item1} | {item.Item2}\n";
+                foreach ((string, string) item in value)
+                    if ((item.Item1 != null) || (item.Item2 != null))
+                        block.Text += $"{item.Item1} | {item.Item2}\n";
         }
 
         //toolbar status
@@ -37,7 +37,7 @@ namespace xmlparser
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("ru-ru");
             try
             {
-                Process.Start(Path.GetFullPath(this.handler.Path()));
+                Process.Start(Path.GetFullPath(this.handler.GetPath()));
             }
             catch (System.ComponentModel.Win32Exception)
             {

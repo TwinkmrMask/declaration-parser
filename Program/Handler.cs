@@ -6,6 +6,7 @@ using System.IO;
 using System.Xml;
 using database;
 using System;
+using System.Windows;
 namespace xmlparser
 {
     class Handler : DefaultSettings
@@ -16,7 +17,7 @@ namespace xmlparser
         private List<(string, string)> data;
         private List<(string, string)> awb;
 
-        public Func<string> Path = () => defaultPath + nameExcelFile;
+        public Func<string> GetPath = () => defaultPath + nameExcelFile;
 
         public Handler()
         {
@@ -38,14 +39,21 @@ namespace xmlparser
         }
         public List<(string, string)> XmlHandler(string path)
         {
+            
             XmlDocument document = new XmlDocument();
-            document.Load(path);
-
+            try
+            {
+                document.Load(path);
+            }
+            catch
+            {
+               return new List<(string, string)>() { ("Файл повреждён", "Неудалось прочитать файл") } ;
+            }
             (IWorkbook, ISheet) book = open();
 
             XmlElement root = document.DocumentElement;
             foreach (XmlElement item in root)
-            {
+            { 
                 foreach (XmlNode child in item.ChildNodes)
                 {
                     if (child != null)
@@ -96,7 +104,7 @@ namespace xmlparser
                                             {
                                                 if (doc.Name == "ESADout_CUPresentedDocument")
                                                 {
-                                                    if (checkDocumentCode(search("catESAD_cu:PresentedDocumentModeCode", doc, "Классификационный номер документа").Item2))
+                                                    //if (checkDocumentCode(search("catESAD_cu:PresentedDocumentModeCode", doc, "Классификационный номер документа").Item2))
                                                     {
                                                         add(search("cat_ru:PrDocumentName", doc, "Документ"));
                                                         add(search("cat_ru:PrDocumentNumber", doc, "Номер документа"));
@@ -124,7 +132,7 @@ namespace xmlparser
         private void close(IWorkbook wb, string path, string name)
         {
             if (!Directory.Exists(defaultPath)) Directory.CreateDirectory(defaultPath);
-            using (FileStream fs = new FileStream(Path(), FileMode.Create, FileAccess.Write))
+            using (FileStream fs = new FileStream(GetPath(), FileMode.Create, FileAccess.Write))
             {
                 wb.Write(fs);
                 fs.Close();

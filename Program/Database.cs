@@ -73,12 +73,8 @@ namespace database
             var Link = ConvertToSequence(transportDocumentCode);
             this.links.GetOrCreate(this.links.Constants.Itself, Link);
         }
-        public bool TransportCodeEach(string transportDocumentCode)
-        {
-            if (this.links.SearchOrDefault(this.links.Constants.Itself, ConvertToSequence(transportDocumentCode)) != 0)
-                return true;
-            else return false;
-        }
+        public bool TransportCodeEach(string transportDocumentCode) => 
+            this.links.SearchOrDefault(this.links.Constants.Itself, ConvertToSequence(transportDocumentCode)) != 0;
         protected override void Dispose(bool manual, bool wasDisposed)
         {
             if (!wasDisposed)
