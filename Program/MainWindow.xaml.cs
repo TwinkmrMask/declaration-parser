@@ -10,7 +10,7 @@ using System;
 
 namespace xmlparser
 {
-    public partial class MainWindow
+    public partial class MainWindow : IDefaultSettings
     {
         List<string> FileNames = new List<string>();
         string directoryName;

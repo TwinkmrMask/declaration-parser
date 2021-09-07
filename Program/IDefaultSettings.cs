@@ -3,9 +3,9 @@ namespace database
 {
     public interface IDefaultSettings
     {
-        public string defaultPath { get { return "../../../Resources/"; } }
+        const string defaultPath = "../../../Resources/";
 
-        public string nameExcelFile { get { return "declarationInfo.xlsx"; } }
+        const string nameExcelFile = "declarationInfo.xlsx"; 
 
         const string indexFileName = "links";
         const string dataFileName = "db";
@@ -17,7 +17,8 @@ namespace database
             "02020", "02021", "02022",
             "02024", "02025", "02099"
         };
-        protected void addTransportCodes(string indexFileName, string dataFileName, string defaultPath)
+
+        static void AddTransportCodes(string indexFileName, string dataFileName, string defaultPath)
         {
             using(DataBase data = new DataBase(indexFileName, dataFileName, defaultPath))
                 foreach (string code in transportDocumentCodes)

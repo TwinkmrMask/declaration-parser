@@ -5,10 +5,11 @@ using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Windows;
+using database;
 
 namespace xmlparser
 {
-    public partial class Information
+    public partial class Information 
     {
         string path;
         Handler handler;
@@ -19,7 +20,6 @@ namespace xmlparser
             this.handler = new Handler();
             start(this.path);
         }
-
         void toolbarStatus(string status) => toolbar.Content = status;
         void start(string path) => print(this.handler.XmlHandler(path));
         void print(List<(string, string)> value)

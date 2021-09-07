@@ -9,7 +9,7 @@ using System;
 using System.Windows;
 namespace xmlparser
 {
-    class Handler : DefaultSettings
+    class Handler : IDefaultSettings
     {
         private double netWeightQuantity;
         private double grossWeightQuantity;
@@ -17,7 +17,7 @@ namespace xmlparser
         private List<(string, string)> data;
         private List<(string, string)> awb;
 
-        public Func<string> GetPath = () => defaultPath + nameExcelFile;
+        public Func<string> GetPath = () => IDefaultSettings.defaultPath + IDefaultSettings.nameExcelFile;
 
         public Handler()
         {
@@ -28,7 +28,7 @@ namespace xmlparser
                 this.positions = 0;
                 this.awb = new List<(string, string)>();
                 this.data = new List<(string, string)>();
-                addTransportCodes(indexFileName, dataFileName, defaultPath);
+                IDefaultSettings.AddTransportCodes(IDefaultSettings.indexFileName, IDefaultSettings.dataFileName, IDefaultSettings.defaultPath);
             }
             finally
             {
@@ -124,14 +124,14 @@ namespace xmlparser
             }
             foreach ((string, string) pair in awb.Distinct())
                 collect(pair, book);
-            close(book.Item1, defaultPath, nameExcelFile);
+            close(book.Item1, IDefaultSettings.defaultPath, IDefaultSettings.nameExcelFile);
             return this.data;
         }
-
+        
         //auxiliary methods
         private void close(IWorkbook wb, string path, string name)
         {
-            if (!Directory.Exists(defaultPath)) Directory.CreateDirectory(defaultPath);
+            if (!Directory.Exists(IDefaultSettings.defaultPath)) Directory.CreateDirectory(IDefaultSettings.defaultPath);
             using (FileStream fs = new FileStream(GetPath(), FileMode.Create, FileAccess.Write))
             {
                 wb.Write(fs);
@@ -166,7 +166,7 @@ namespace xmlparser
         }
         private bool checkDocumentCode(string number)
         {
-            using (DataBase data = new DataBase(indexFileName, dataFileName, defaultPath))
+            using (DataBase data = new DataBase(IDefaultSettings.indexFileName, IDefaultSettings.dataFileName, IDefaultSettings.defaultPath))
                 return data.TransportCodeEach(number);
         }
         private void calc(string value, ref double result)

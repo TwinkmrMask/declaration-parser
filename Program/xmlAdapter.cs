@@ -1,40 +1,40 @@
-﻿using Platform.IO;
+﻿using System.Collections.Generic;
+using Platform.IO;
 using Platform.Data.Doublets.Memory.United.Generic;
 using Platform.Data.Doublets.Xml;
 using Platform.Data.Doublets;
+using Platform.Disposables;
+using Platform.Collections.Stacks;
+using Platform.Converters;
+using Platform.Memory;
+using Platform.Data;
+using Platform.Data.Numbers.Raw;
+using Platform.Data.Doublets;
+using Platform.Data.Doublets.Decorators;
+using Platform.Data.Doublets.Unicode;
+using Platform.Data.Doublets.Sequences.Walkers;
+using Platform.Data.Doublets.Sequences.Converters;
+using Platform.Data.Doublets.CriterionMatchers;
+using Platform.Data.Doublets.Memory.Split.Specific;
+using TLinkAddress = System.UInt32;
 
 namespace database
 {
     //Adapter pattern
     //Turns xml into links and immediately saves it to the links file
-    public class XmlAdapter : DefaultSettings
+    public class XmlAdapter : DataBase
     {
-        private string xmlFileName;
-        public XmlAdapter(string xmlFileName)
+        public TLinkAddress CreateLink(string innerXml,string xmlFileName)
         {
-            this.xmlFileName = xmlFileName;
-            Run(new string[] { xmlFileName, indexFileName });
+            var nameLink = ConvertToSequence(xmlFileName);
+            var documentLink = ConvertToSequence(innerXml);
+            return links.GetOrCreate(nameLink, documentLink);
         }
-        private void Run(params string[] args)
-        {
-            var linksFile = ConsoleHelpers.GetOrReadArgument(0, indexFileName, args);
-            var file = ConsoleHelpers.GetOrReadArgument(1, xmlFileName, args);
 
-            using (var cancellation = new ConsoleCancellation())
-            using (var memoryAdapter = new UnitedMemoryLinks<uint>(linksFile))
-            {
-                var links = memoryAdapter.DecorateWithAutomaticUniquenessAndUsagesResolution();
-                var indexer = new XmlIndexer<uint>(links);
-                var indexingImporter = new XmlImporter<uint>(indexer);
-                indexingImporter.Import(file, cancellation.Token).Wait();
-                if (cancellation.NotRequested)
-                {
-                    var cache = indexer.Cache;
-                    var storage = new DefaultXmlStorage<uint>(links, false, cache);
-                    var importer = new XmlImporter<uint>(storage);
-                    importer.Import(file, cancellation.Token).Wait();
-                }
-            }
-        }
+        public List<string> GetAllFileNames() { return default; }
+
+        public (string, string) GetFile(string filename) { return default; }
+        
+        public XmlAdapter(string indexFileName, string dataFileName, string path) : base(indexFileName, dataFileName, path) { }
     }
 }

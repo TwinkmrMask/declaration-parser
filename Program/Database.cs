@@ -25,10 +25,10 @@ namespace database
         private readonly TLinkAddress _unicodeSequenceMarker;
         private readonly RawNumberToAddressConverter<TLinkAddress> _numberToAddressConverter;
         private readonly AddressToRawNumberConverter<TLinkAddress> _addressToNumberConverter;
-        private readonly IConverter<string, TLinkAddress> _stringToUnicodeSequenceConverter;
+        protected readonly IConverter<string, TLinkAddress> _stringToUnicodeSequenceConverter;
         private readonly IConverter<TLinkAddress, string> _unicodeSequenceToStringConverter;
         private readonly ILinks<TLinkAddress> _disposableLinks;
-        private readonly ILinks<TLinkAddress> links;
+        public readonly ILinks<TLinkAddress> links;
     
         public DataBase(string indexFileName, string dataFileName, string path)
         {
