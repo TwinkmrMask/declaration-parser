@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 namespace database
 {
-    public abstract class DefaultSettings
+    public interface IDefaultSettings
     {
-        protected static readonly string defaultPath = "../../../Resources/";
-        protected static readonly string nameExcelFile = "declarationInfo.xlsx";
-        protected static readonly string indexFileName = "links";
-        protected static readonly string dataFileName = "db";
+        public string defaultPath { get { return "../../../Resources/"; } }
+
+        public string nameExcelFile { get { return "declarationInfo.xlsx"; } }
+
+        const string indexFileName = "links";
+        const string dataFileName = "db";
         private static readonly List<string> transportDocumentCodes = new List<string>()
         {
             "02011", "02012", "02013",
