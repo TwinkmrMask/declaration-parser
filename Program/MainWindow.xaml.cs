@@ -18,7 +18,6 @@ namespace xmlparser
 
         void copy(string text) => Clipboard.SetText(text);
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Стили именования", Justification = "<Ожидание>")]
         private void getPath(out string directoryName, out string fileName)
         {
             try
@@ -91,7 +90,17 @@ namespace xmlparser
         {
             Content path = Data.SelectedItem as Content;
             Information info = new Information(path.FileName);
+            addFile(path.FileName);
             info.Show();
+        }
+
+        void addFile(string name)
+        {
+            XmlDocument document = new XmlDocument();
+            document.Load(name);
+            XmlElement root = document.DocumentElement;
+            var adapter = new XmlAdapter(IDefaultSettings.indexFileName, IDefaultSettings.dataFileName, IDefaultSettings.defaultPath);
+            adapter.CreateLink(Path.GetFileName(name), root.InnerXml);
         }
     }
 }

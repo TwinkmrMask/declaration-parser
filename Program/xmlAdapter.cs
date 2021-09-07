@@ -24,7 +24,7 @@ namespace database
     //Turns xml into links and immediately saves it to the links file
     public class XmlAdapter : DataBase
     {
-        public TLinkAddress CreateLink(string innerXml,string xmlFileName)
+        public TLinkAddress CreateLink(string xmlFileName, string innerXml)
         {
             var nameLink = ConvertToSequence(xmlFileName);
             var documentLink = ConvertToSequence(innerXml);
