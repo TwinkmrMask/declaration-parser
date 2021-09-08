@@ -166,7 +166,7 @@ namespace xmlparser
         }
         private bool checkDocumentCode(string number)
         {
-            using (DataBase data = new DataBase(IDefaultSettings.indexFileName, IDefaultSettings.dataFileName, IDefaultSettings.defaultPath))
+            using (var data = new database.DataBase(IDefaultSettings.indexFileName, IDefaultSettings.dataFileName, IDefaultSettings.defaultPath))
                 return data.TransportCodeEach(number);
         }
         private void calc(string value, ref double result)

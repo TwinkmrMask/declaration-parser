@@ -16,7 +16,7 @@ namespace xmlparser
         string directoryName;
         string fileName;
 
-        void copy(string text) => Clipboard.SetText(text);
+        private void copy(string text) => Clipboard.SetText(text);
 
         private void getPath(out string directoryName, out string fileName)
         {
@@ -94,13 +94,13 @@ namespace xmlparser
             info.Show();
         }
 
-        void addFile(string name)
+        private void addFile(string name)
         {
             XmlDocument document = new XmlDocument();
             document.Load(name);
             XmlElement root = document.DocumentElement;
             var adapter = new XmlAdapter(IDefaultSettings.indexFileName, IDefaultSettings.dataFileName, IDefaultSettings.defaultPath);
-            adapter.CreateLink(Path.GetFileName(name), root.InnerXml);
+            if (root != null) adapter.CreateLink(Path.GetFileName(name), root.InnerXml);
         }
     }
 }
