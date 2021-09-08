@@ -2,7 +2,7 @@
 {
     class Content
     {
-        public string FileName { get; set; }
-        public string DocumentID { get; set; }
+        public string FileName { get; init; }
+        //public string DocumentID { get; set; }
     }
 }

@@ -5,9 +5,6 @@ using System.IO;
 using System.Xml;
 using database;
 using System;
-
-#pragma 
-
 namespace xmlparser
 {
     public partial class MainWindow : IDefaultSettings
