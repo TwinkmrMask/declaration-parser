@@ -15,7 +15,7 @@ using TLinkAddress = System.UInt32;
 namespace database
 {
     //Part of the code, along with comments, is taken from https://github.com/linksplatform/Comparisons.SQLiteVSDoublets/commit/289cf361c82ab605b9ba0d1621496b3401e432f7
-    public class Platform : DisposableBase
+    public class Platform : DisposableBase, IDefaultSettings
     {
         protected TLinkAddress currentMappingLinkIndex = 1;
         
@@ -31,10 +31,10 @@ namespace database
         private readonly ILinks<TLinkAddress> _disposableLinks;
         protected readonly ILinks<TLinkAddress> links;
     
-        public Platform(string indexFileName, string dataFileName, string path)
+        public Platform()
         {
-            this.indexFileName = indexFileName;
-            this.dataFileName = dataFileName;
+            this.indexFileName = IDefaultSettings.indexFileName;
+            this.dataFileName = IDefaultSettings.dataFileName;
 
             var dataMemory = new FileMappedResizableDirectMemory(this.dataFileName);
             var indexMemory = new FileMappedResizableDirectMemory(this.indexFileName);

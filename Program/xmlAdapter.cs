@@ -40,7 +40,7 @@ namespace database
 
         public (string, string) GetFile(string filename) { return default; }
         
-        public XmlAdapter(string indexFileName, string dataFileName, string path) : base(indexFileName, dataFileName, path)
+        public XmlAdapter()
         {
             _xmlMarker = GetOrCreateNextMapping(currentMappingLinkIndex++);
         }

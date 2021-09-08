@@ -18,9 +18,9 @@ namespace database
             "02024", "02025", "02099"
         };
 
-        static void AddTransportCodes(string indexFileName, string dataFileName, string defaultPath)
+        static void AddTransportCodes()
         {
-            using(DataBase data = new DataBase(indexFileName, dataFileName, defaultPath))
+            using(DataBase data = new DataBase())
                 foreach (string code in transportDocumentCodes)
                     data.CreateTransportCodeLink(code);
 

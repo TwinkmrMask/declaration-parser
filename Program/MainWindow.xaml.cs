@@ -99,7 +99,7 @@ namespace xmlparser
             XmlDocument document = new XmlDocument();
             document.Load(name);
             XmlElement root = document.DocumentElement;
-            var adapter = new XmlAdapter(IDefaultSettings.indexFileName, IDefaultSettings.dataFileName, IDefaultSettings.defaultPath);
+            var adapter = new XmlAdapter();
             if (root != null) adapter.CreateLink(Path.GetFileName(name), root.InnerXml);
         }
     }

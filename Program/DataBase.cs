@@ -4,11 +4,6 @@ namespace database
 {
     public class DataBase : Platform
     {
-        public DataBase(string indexFileName, string dataFileName, string path) : base(indexFileName, dataFileName, path)
-        {
-            
-        }
-        
         public void Delete(TLinkAddress link) => links.Delete(link);
         public void CreateTransportCodeLink(string transportDocumentCode)
         {

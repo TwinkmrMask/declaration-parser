@@ -28,7 +28,7 @@ namespace xmlparser
                 this.positions = 0;
                 this.awb = new List<(string, string)>();
                 this.data = new List<(string, string)>();
-                IDefaultSettings.AddTransportCodes(IDefaultSettings.indexFileName, IDefaultSettings.dataFileName, IDefaultSettings.defaultPath);
+                IDefaultSettings.AddTransportCodes();
             }
             finally
             {
@@ -166,7 +166,7 @@ namespace xmlparser
         }
         private bool checkDocumentCode(string number)
         {
-            using (var data = new database.DataBase(IDefaultSettings.indexFileName, IDefaultSettings.dataFileName, IDefaultSettings.defaultPath))
+            using (var data = new database.DataBase())
                 return data.TransportCodeEach(number);
         }
         private void calc(string value, ref double result)
