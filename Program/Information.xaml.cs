@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
-using database;
 
-namespace xmlparser
+namespace XmlParser
 {
     public partial class Information 
     {
@@ -16,7 +14,7 @@ namespace xmlparser
         public Information(string path)
         {
             InitializeComponent();
-            this._handler = new Handler();
+            _handler = new Handler();
             Start(path);
         }
 

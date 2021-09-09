@@ -12,9 +12,9 @@ using Platform.Data.Doublets.Sequences.Converters;
 using Platform.Data.Doublets.CriterionMatchers;
 using Platform.Data.Doublets.Memory.Split.Specific;
 using TLinkAddress = System.UInt32;
-namespace database
+namespace DataBase
 {
-    public class Platform : DisposableBase, IDefaultSettings
+    public class Platform : DisposableBase
     {
         protected uint CurrentMappingLinkIndex = 1;
         private readonly uint _meaningRoot;

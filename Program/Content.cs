@@ -1,8 +1,4 @@
-﻿namespace xmlparser
+﻿namespace XmlParser
 {
-    class Content
-    {
-        public string FileName { get; init; }
-        //public string DocumentID { get; set; }
-    }
+    internal class Content { public string FileName { get; init; } }
 }

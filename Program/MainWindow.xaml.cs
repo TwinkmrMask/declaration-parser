@@ -3,9 +3,9 @@ using System.Linq;
 using System.Windows;
 using System.IO;
 using System.Xml;
-using database;
+using DataBase;
 using System;
-namespace xmlparser
+namespace XmlParser
 {
     public partial class MainWindow : IDefaultSettings
     {
@@ -83,7 +83,7 @@ namespace xmlparser
         {
             if (Data.SelectedItem is not Content path) return;
             var info = new Information(path.FileName);
-            //addFile(path.FileName);
+            AddFile(path.FileName);
             info.Show();
         }
         

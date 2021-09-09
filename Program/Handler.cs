@@ -4,10 +4,10 @@ using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System.IO;
 using System.Xml;
-using database;
+using DataBase;
 using System;
 using System.Windows;
-namespace xmlparser
+namespace XmlParser
 {
     class Handler
     {
@@ -17,7 +17,7 @@ namespace xmlparser
         private List<(string, string)> data;
         private List<(string, string)> awb;
 
-        public Func<string> GetPath = () => IDefaultSettings.DefaultPath + IDefaultSettings.NameExcelFile;
+        public Func<string> GetPath = () => IDefaultSettings.NameExcelFile;
 
         public Handler()
         {
@@ -28,7 +28,11 @@ namespace xmlparser
                 this.positions = 0;
                 this.awb = new List<(string, string)>();
                 this.data = new List<(string, string)>(); 
-                IDefaultSettings.AddTransportCodes();
+                //IDefaultSettings.AddTransportCodes();
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -123,12 +127,12 @@ namespace xmlparser
             }
             foreach ((string, string) pair in awb.Distinct())
                 collect(pair, book);
-            close(book.Item1, IDefaultSettings.DefaultPath, IDefaultSettings.NameExcelFile);
+            close(book.Item1);
             return this.data;
         }
         
         //auxiliary methods
-        private void close(IWorkbook wb, string path, string name)
+        private void close(IWorkbook wb)
         {
             if (!Directory.Exists(IDefaultSettings.DefaultPath)) Directory.CreateDirectory(IDefaultSettings.DefaultPath);
             using (FileStream fs = new FileStream(GetPath(), FileMode.Create, FileAccess.Write))
@@ -165,7 +169,7 @@ namespace xmlparser
         }
         private bool checkDocumentCode(string number)
         {
-            using (var data = new database.DataBase())
+            using (var data = new DataBase.DataBase())
                 return data.TransportCodeEach(number);
         }
         private void calc(string value, ref double result)

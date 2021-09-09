@@ -1,14 +1,12 @@
 ﻿using System.Collections.Generic;
-namespace database
+namespace DataBase
 {
     public interface IDefaultSettings
     {
         const string DefaultPath = "../../../Resources/";
 
-        const string NameExcelFile = "declarationInfo.xlsx";
-
+        static string NameExcelFile => IDefaultSettings.DefaultPath + "declarationInfo.xlsx";
         static string IndexFileName => IDefaultSettings.DefaultPath + "links";
-
         static string DataFileName => IDefaultSettings.DefaultPath + "db";
         
         private static readonly List<string> TransportDocumentCodes = new()
@@ -26,8 +24,8 @@ namespace database
         static void AddTransportCodes()
         {
             using var data = new DataBase();
-                foreach (var code in TransportDocumentCodes)
-                    data.CreateTransportCodeLink(code);
+            foreach (var code in TransportDocumentCodes)
+                data.CreateTransportCodeLink(code);
         }
     }
 }

@@ -2,11 +2,11 @@
 using System.Linq;
 using Platform.Data.Doublets;
 
-namespace database
+namespace DataBase
 {
     //Adapter pattern
     //Turns xml into links and immediately saves it to the links file
-    public class XmlAdapter : database.Platform
+    public class XmlAdapter : Platform
     {
         private readonly uint _xmlMarker;
         

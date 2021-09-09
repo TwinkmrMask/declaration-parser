@@ -1,6 +1,6 @@
 ﻿using Platform.Data.Doublets;
 using TLinkAddress = System.UInt32;
-namespace database
+namespace DataBase
 {
     public class DataBase : Platform
     {
