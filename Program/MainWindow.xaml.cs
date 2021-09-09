@@ -83,7 +83,7 @@ namespace XmlParser
         {
             if (Data.SelectedItem is not Content path) return;
             var info = new Information(path.FileName);
-            AddFile(path.FileName);
+            //AddFile(path.FileName);
             info.Show();
         }
         

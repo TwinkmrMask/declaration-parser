@@ -8,7 +8,7 @@ namespace DataBase
         static string NameExcelFile => IDefaultSettings.DefaultPath + "declarationInfo.xlsx";
         static string IndexFileName => IDefaultSettings.DefaultPath + "links";
         static string DataFileName => IDefaultSettings.DefaultPath + "db";
-        
+
         private static readonly List<string> TransportDocumentCodes = new()
         {
             "02011", "02012", "02013",
@@ -17,10 +17,7 @@ namespace DataBase
             "02020", "02021", "02022",
             "02024", "02025", "02099"
         };
-
         
-        //TODO: Bug detected when adding codes to the database
-        //TODO: Look at Platform.cs line 58
         static void AddTransportCodes()
         {
             using var data = new DataBase();

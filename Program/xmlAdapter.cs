@@ -14,36 +14,36 @@ namespace DataBase
         {
             var nameLink = ConvertToSequence(xmlFileName);
             var documentLink = ConvertToSequence(innerXml);
-            Links.GetOrCreate( _xmlMarker, Links.GetOrCreate(nameLink, documentLink));
+            links.GetOrCreate( _xmlMarker, links.GetOrCreate(nameLink, documentLink));
         }
 
         public List<string> GetAllFileNames()
         {
             string name;
             var names = new List<string>();
-            var query = new Link<uint>(this.Links.Constants.Any, _xmlMarker, this.Links.Constants.Any);
+            var query = new Link<uint>(this.links.Constants.Any, _xmlMarker, this.links.Constants.Any);
             
             if (!IsLinks(query)) return default;
             
-            this.Links.Each((link) =>
+            this.links.Each((link) =>
             {
-                var doublet = link[this.Links.Constants.TargetPart];
-                name = ConvertToString(this.Links.GetSource(doublet));
+                var doublet = link[this.links.Constants.TargetPart];
+                name = ConvertToString(this.links.GetSource(doublet));
                     names.Add(name);
-                return this.Links.Constants.Continue;
+                return this.links.Constants.Continue;
             }, query);
             return names;           
         }
-        
-        private bool IsLinks(Link<uint> query) => this.Links.Count(query) != 0;
+
+        private bool IsLinks(Link<uint> query) => this.links.Count(query) != 0;
 
         public (string, string) GetFile(string filename)
         {
-            var foundLinks = Links.All(Links.GetSource(ConvertToSequence(filename)), Links.Constants.Any);
+            var foundLinks = links.All(links.GetSource(ConvertToSequence(filename)), links.Constants.Any);
 
             var results = (from foundLink in foundLinks let linkIndex = 
-                Links.SearchOrDefault(_xmlMarker, Links.GetIndex(foundLink)) 
-                where linkIndex != default select Links.GetTarget(foundLink)).ToList();
+                links.SearchOrDefault(_xmlMarker, links.GetIndex(foundLink)) 
+                where linkIndex != default select links.GetTarget(foundLink)).ToList();
             return (filename, ConvertToString(results[0]));
         }
         
@@ -51,12 +51,12 @@ namespace DataBase
         {
             if (flag)
             {
-                var foundLinks = Links.All(Links.GetSource(ConvertToSequence(filename)), Links.Constants.Any);
+                var foundLinks = links.All(links.GetSource(ConvertToSequence(filename)), links.Constants.Any);
 
                 var results = (from foundLink in foundLinks let linkIndex = 
-                    Links.SearchOrDefault(_xmlMarker, 
-                        Links.GetIndex(foundLink)) where linkIndex != 
-                                                         default select ConvertToString(Links.GetTarget(foundLink))).ToList();
+                    links.SearchOrDefault(_xmlMarker, 
+                        links.GetIndex(foundLink)) where linkIndex != 
+                                                         default select ConvertToString(links.GetTarget(foundLink))).ToList();
 
                 return (filename, results);
             }
@@ -66,7 +66,7 @@ namespace DataBase
         
         public XmlAdapter()
         {
-            _xmlMarker = GetOrCreateNextMapping(CurrentMappingLinkIndex++);
+            _xmlMarker = GetOrCreateNextMapping(currentMappingLinkIndex++);
         }
     }
 }

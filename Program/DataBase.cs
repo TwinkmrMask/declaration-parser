@@ -4,13 +4,13 @@ namespace DataBase
 {
     public class DataBase : Platform
     {
-        public void Delete(uint link) => Links.Delete(link);
+        public void Delete(uint link) => links.Delete(link);
         public void CreateTransportCodeLink(string transportDocumentCode)
         {
             var link = ConvertToSequence(transportDocumentCode);
-            this.Links.GetOrCreate(this.Links.Constants.Itself, link);
+            this.links.GetOrCreate(this.links.Constants.Itself, link);
         }
         public bool TransportCodeEach(string transportDocumentCode) => 
-            this.Links.SearchOrDefault(this.Links.Constants.Itself, ConvertToSequence(transportDocumentCode)) != 0;
+            this.links.SearchOrDefault(this.links.Constants.Itself, ConvertToSequence(transportDocumentCode)) != 0;
     }
 }

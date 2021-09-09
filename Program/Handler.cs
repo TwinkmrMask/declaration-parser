@@ -28,7 +28,7 @@ namespace XmlParser
                 this.positions = 0;
                 this.awb = new List<(string, string)>();
                 this.data = new List<(string, string)>(); 
-                //IDefaultSettings.AddTransportCodes();
+                IDefaultSettings.AddTransportCodes();
             }
             catch (Exception exception)
             {
