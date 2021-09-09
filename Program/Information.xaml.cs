@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using database;
@@ -11,33 +12,33 @@ namespace xmlparser
 {
     public partial class Information 
     {
-        string path;
-        Handler handler;
+        private readonly Handler _handler;
         public Information(string path)
         {
             InitializeComponent();
-            this.path = path;
-            this.handler = new Handler();
-            start(this.path);
+            this._handler = new Handler();
+            Start(path);
         }
-        void toolbarStatus(string status) => toolbar.Content = status;
-        void start(string path) => print(this.handler.XmlHandler(path));
-        void print(List<(string, string)> value)
+
+        private void ToolbarStatus(string status) => toolbar.Content = status;
+        private void Start(string path) => Print(this._handler.XmlHandler(path));
+
+        private void Print(IEnumerable<(string, string)> value)
         {
-                foreach ((string, string) item in value)
-                    if ((item.Item1 != null) || (item.Item2 != null))
-                        block.Text += $"{item.Item1} | {item.Item2}\n";
+            foreach (var item in value.Where(item => 
+                (item.Item1 != null) || (item.Item2 != null)))
+                block.Text += $"{item.Item1} | {item.Item2}\n";
         }
 
         //toolbar status
-        private void OpenInExcel_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e) => toolbarStatus("Открыть в MS Excel");
-        private void OpenInExcel_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e) => toolbarStatus(null);
+        private void OpenInExcel_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e) => ToolbarStatus("Открыть в MS Excel");
+        private void OpenInExcel_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e) => ToolbarStatus(null);
         private void OpenInExcel_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("ru-ru");
             try
             {
-                Process.Start(Path.GetFullPath(this.handler.GetPath()));
+                Process.Start(Path.GetFullPath(this._handler.GetPath()));
             }
             catch (System.ComponentModel.Win32Exception)
             {

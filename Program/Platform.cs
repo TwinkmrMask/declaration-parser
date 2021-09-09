@@ -29,8 +29,8 @@ namespace database
             var unicodeSymbolMarker = GetOrCreateNextMapping(CurrentMappingLinkIndex++);
             var unicodeSequenceMarker = GetOrCreateNextMapping(CurrentMappingLinkIndex++);
             
-            var dataMemory = new FileMappedResizableDirectMemory(IDefaultSettings.indexFileName);
-            var indexMemory = new FileMappedResizableDirectMemory(IDefaultSettings.dataFileName);
+            var dataMemory = new FileMappedResizableDirectMemory(IDefaultSettings.IndexFileName);
+            var indexMemory = new FileMappedResizableDirectMemory(IDefaultSettings.DataFileName);
             
             var linksConstants = new LinksConstants<uint>(enableExternalReferencesSupport: true);
 

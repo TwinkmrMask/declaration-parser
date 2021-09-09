@@ -17,7 +17,7 @@ namespace xmlparser
         private List<(string, string)> data;
         private List<(string, string)> awb;
 
-        public Func<string> GetPath = () => IDefaultSettings.defaultPath + IDefaultSettings.nameExcelFile;
+        public Func<string> GetPath = () => IDefaultSettings.DefaultPath + IDefaultSettings.NameExcelFile;
 
         public Handler()
         {
@@ -27,8 +27,8 @@ namespace xmlparser
                 this.netWeightQuantity = 0;
                 this.positions = 0;
                 this.awb = new List<(string, string)>();
-                this.data = new List<(string, string)>();
-                IDefaultSettings.AddTransportCodes();
+                this.data = new List<(string, string)>(); 
+                //IDefaultSettings.AddTransportCodes();
             }
             finally
             {
@@ -124,14 +124,14 @@ namespace xmlparser
             }
             foreach ((string, string) pair in awb.Distinct())
                 collect(pair, book);
-            close(book.Item1, IDefaultSettings.defaultPath, IDefaultSettings.nameExcelFile);
+            close(book.Item1, IDefaultSettings.DefaultPath, IDefaultSettings.NameExcelFile);
             return this.data;
         }
         
         //auxiliary methods
         private void close(IWorkbook wb, string path, string name)
         {
-            if (!Directory.Exists(IDefaultSettings.defaultPath)) Directory.CreateDirectory(IDefaultSettings.defaultPath);
+            if (!Directory.Exists(IDefaultSettings.DefaultPath)) Directory.CreateDirectory(IDefaultSettings.DefaultPath);
             using (FileStream fs = new FileStream(GetPath(), FileMode.Create, FileAccess.Write))
             {
                 wb.Write(fs);
@@ -164,11 +164,13 @@ namespace xmlparser
             if (!awb.Contains(pair))
                 awb.Add(pair);
         }
+        /*
         private bool checkDocumentCode(string number)
         {
             using (var data = new database.DataBase())
                 return data.TransportCodeEach(number);
         }
+        */
         private void calc(string value, ref double result)
         {
             if(value != null)

@@ -3,13 +3,14 @@ namespace database
 {
     public interface IDefaultSettings
     {
-        const string defaultPath = "../../../Resources/";
+        const string DefaultPath = "../../../Resources/";
 
-        const string nameExcelFile = "declarationInfo.xlsx"; 
+        const string NameExcelFile = "declarationInfo.xlsx"; 
 
-        const string indexFileName = "links";
-        const string dataFileName = "db";
-        private static readonly List<string> transportDocumentCodes = new List<string>()
+        const string IndexFileName = "links";
+        const string DataFileName = "db";
+        
+        private static readonly List<string> TransportDocumentCodes = new()
         {
             "02011", "02012", "02013",
             "02014", "02015", "02016",
@@ -20,10 +21,9 @@ namespace database
 
         static void AddTransportCodes()
         {
-            using(DataBase data = new DataBase())
-                foreach (string code in transportDocumentCodes)
-                    data.CreateTransportCodeLink(code);
-
+            using var data = new DataBase();
+            foreach (var code in TransportDocumentCodes)
+                data.CreateTransportCodeLink(code);
         }
     }
 }

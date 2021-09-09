@@ -9,18 +9,16 @@ namespace xmlparser
 {
     public partial class MainWindow : IDefaultSettings
     {
-        List<string> FileNames = new List<string>();
-        string directoryName;
-        string fileName;
+        private readonly List<string> _fileNames = new();
+        private string _directoryName;
+        private string _fileName;
 
-        private void copy(string text) => Clipboard.SetText(text);
-
-        private void getPath(out string directoryName, out string fileName)
+        private static void Copy(string text) => Clipboard.SetText(text);
+        private static void GetPath(out string directoryName, out string fileName)
         {
             try
             {
-                Microsoft.Win32.OpenFileDialog openDialog = new Microsoft.Win32.OpenFileDialog();
-                openDialog.Filter = "Файл Xml|*.xml";
+                var openDialog = new Microsoft.Win32.OpenFileDialog { Filter = "Файл Xml|*.xml" };
                 var result = openDialog.ShowDialog();
                 directoryName = System.IO.Path.GetDirectoryName(openDialog.FileName);
                 fileName = openDialog.FileName;
@@ -30,18 +28,17 @@ namespace xmlparser
                 if (MessageBox.Show( $"Ошибка - {exception1.HResult}\nНажмите OK чтобы скопировать код ошибки, или нажмите Отмена чтобы переписать самостоятельно",
                     "Ошибка получения пути", MessageBoxButton.OKCancel,
                     MessageBoxImage.Error) == MessageBoxResult.OK)
-                    copy(exception1.HResult.ToString());
+                    Copy(exception1.HResult.ToString());
                 directoryName = default;
                 fileName = default;
             }
         }
-        
-        private void getFile()
+        private void GetFile()
         {
             try
             {
-                IEnumerable<string> allfiles = Directory.EnumerateFiles(directoryName, "*.xml");
-                foreach (string filename in allfiles) FileNames.Add(filename);
+                var allFiles = Directory.EnumerateFiles(_directoryName, "*.xml");
+                foreach (var filename in allFiles) _fileNames.Add(filename);
             }
 
             catch (Exception exception4)
@@ -49,23 +46,22 @@ namespace xmlparser
                 if (MessageBox.Show($"Ошибка - {exception4.HResult}\nНажмите OK чтобы скопировать код ошибки, или нажмите Отмена чтобы переписать самостоятельно",
                     "Неизвестная ошибка", MessageBoxButton.OKCancel,
                     MessageBoxImage.Error) == MessageBoxResult.OK)
-                    copy(exception4.HResult.ToString());
+                    Copy(exception4.HResult.ToString());
 
             }
         }
-        private void setSource()
+        private void SetSource()
         {
             try
             {
-                getPath(out this.directoryName, out this.fileName);
-                if ( new string[] { directoryName, fileName }.Any(values => string.IsNullOrWhiteSpace(values)))
+                GetPath(out this._directoryName, out this._fileName);
+                if ( new string[] { _directoryName, _fileName }.Any(string.IsNullOrWhiteSpace))
                     throw new System.IO.IOException("Null path");
                 else
                 {
-                    getFile();
-                    List<Content> declarations = new List<Content>();
-                    foreach (string item in FileNames)
-                        declarations.Add(new Content { FileName = item });
+                    GetFile();
+                    var declarations = _fileNames.Select(item => new Content 
+                        { FileName = item }).ToList();
                     Data.ItemsSource = declarations;
                 }
             }
@@ -73,7 +69,7 @@ namespace xmlparser
             catch (System.IO.IOException e) when (e.Message == "Null path")
             {
                 if (MessageBox.Show("Выберите файл или закройте приложение", "Пустой путь", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.OK)
-                    setSource();
+                    SetSource();
                 else
                     this.Close();
             }
@@ -81,23 +77,24 @@ namespace xmlparser
         public MainWindow()
         {
             InitializeComponent();
-            setSource();
+            SetSource();
         }
         private void Btn_Click(object sender, RoutedEventArgs e)
         {
-            Content path = Data.SelectedItem as Content;
-            Information info = new Information(path.FileName);
-            addFile(path.FileName);
+            if (Data.SelectedItem is not Content path) return;
+            var info = new Information(path.FileName);
+            //addFile(path.FileName);
             info.Show();
         }
-
-        private void addFile(string name)
+        
+        private void AddFile(string name)
         {
-            XmlDocument document = new XmlDocument();
+            var document = new XmlDocument();
             document.Load(name);
-            XmlElement root = document.DocumentElement;
+            var root = document.DocumentElement;
             var adapter = new XmlAdapter();
             if (root != null) adapter.CreateLink(Path.GetFileName(name), root.InnerXml);
         }
+        
     }
 }
