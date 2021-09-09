@@ -14,7 +14,6 @@ using Platform.Data.Doublets.Memory.Split.Specific;
 using TLinkAddress = System.UInt32;
 namespace database
 {
-    //Part of the code, along with comments, is taken from https://github.com/linksplatform/Comparisons.SQLiteVSDoublets/commit/289cf361c82ab605b9ba0d1621496b3401e432f7
     public class Platform : DisposableBase, IDefaultSettings
     {
         protected uint CurrentMappingLinkIndex = 1;
@@ -23,7 +22,6 @@ namespace database
         private readonly IConverter<uint, string> _unicodeSequenceToStringConverter;
         private readonly ILinks<uint> _disposableLinks;
         protected readonly ILinks<uint> Links;
-    
         protected Platform()
         {
             var unicodeSymbolMarker = GetOrCreateNextMapping(CurrentMappingLinkIndex++);
@@ -55,10 +53,11 @@ namespace database
             this._unicodeSequenceToStringConverter = new CachingConverterDecorator<uint, string>(new UnicodeSequenceToStringConverter<uint>(Links, unicodeSequenceCriterionMatcher, sequenceWalker, unicodeSymbolToCharConverter));
         }
         private uint GetOrCreateMeaningRoot(uint meaningRootIndex) => Links.Exists(meaningRootIndex) ? meaningRootIndex : Links.CreatePoint();
+        
+        //TODO: Exception: "Object reference not set to an instance of an object."
         protected uint GetOrCreateNextMapping(uint currentMappingIndex) => Links.Exists(currentMappingIndex) ? currentMappingIndex : Links.CreateAndUpdate(_meaningRoot, Links.Constants.Itself);
         protected string ConvertToString(uint sequence) => _unicodeSequenceToStringConverter.Convert(sequence);
         protected uint ConvertToSequence(string @string) => _stringToUnicodeSequenceConverter.Convert(@string);
-        
         protected override void Dispose(bool manual, bool wasDisposed)
         {
             if (!wasDisposed)

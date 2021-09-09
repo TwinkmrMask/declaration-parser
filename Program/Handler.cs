@@ -9,7 +9,7 @@ using System;
 using System.Windows;
 namespace xmlparser
 {
-    class Handler : IDefaultSettings
+    class Handler
     {
         private double netWeightQuantity;
         private double grossWeightQuantity;
@@ -28,7 +28,7 @@ namespace xmlparser
                 this.positions = 0;
                 this.awb = new List<(string, string)>();
                 this.data = new List<(string, string)>(); 
-                //IDefaultSettings.AddTransportCodes();
+                IDefaultSettings.AddTransportCodes();
             }
             finally
             {
@@ -39,7 +39,6 @@ namespace xmlparser
         }
         public List<(string, string)> XmlHandler(string path)
         {
-            
             XmlDocument document = new XmlDocument();
             try
             {
@@ -164,13 +163,11 @@ namespace xmlparser
             if (!awb.Contains(pair))
                 awb.Add(pair);
         }
-        /*
         private bool checkDocumentCode(string number)
         {
             using (var data = new database.DataBase())
                 return data.TransportCodeEach(number);
         }
-        */
         private void calc(string value, ref double result)
         {
             if(value != null)

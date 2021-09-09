@@ -5,10 +5,11 @@ namespace database
     {
         const string DefaultPath = "../../../Resources/";
 
-        const string NameExcelFile = "declarationInfo.xlsx"; 
+        const string NameExcelFile = "declarationInfo.xlsx";
 
-        const string IndexFileName = "links";
-        const string DataFileName = "db";
+        static string IndexFileName => IDefaultSettings.DefaultPath + "links";
+
+        static string DataFileName => IDefaultSettings.DefaultPath + "db";
         
         private static readonly List<string> TransportDocumentCodes = new()
         {
@@ -19,11 +20,14 @@ namespace database
             "02024", "02025", "02099"
         };
 
+        
+        //TODO: Bug detected when adding codes to the database
+        //TODO: Look at Platform.cs line 58
         static void AddTransportCodes()
         {
             using var data = new DataBase();
-            foreach (var code in TransportDocumentCodes)
-                data.CreateTransportCodeLink(code);
+                foreach (var code in TransportDocumentCodes)
+                    data.CreateTransportCodeLink(code);
         }
     }
 }
