@@ -92,8 +92,8 @@ namespace XmlParser
             var document = new XmlDocument();
             document.Load(name);
             var root = document.DocumentElement;
-            var adapter = new XmlAdapter();
-            if (root != null) adapter.CreateLink(Path.GetFileName(name), root.InnerXml);
+            var adapter = new XmlAdapter(Path.GetFileName(name));
+            if (root != null) adapter.CreateLink(root.InnerXml);
         }
         
     }

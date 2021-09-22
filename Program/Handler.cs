@@ -45,6 +45,7 @@ namespace XmlParser
         public List<(string, string)> XmlHandler(string path)
         {
             XmlDocument document = new XmlDocument();
+            
             try
             {
                 document.Load(path);
@@ -53,6 +54,7 @@ namespace XmlParser
             {
                return new List<(string, string)>() { ("Файл повреждён", "Неудалось прочитать файл") } ;
             }
+            
             (IWorkbook, ISheet) book = open();
 
             XmlElement root = document.DocumentElement;
@@ -120,14 +122,11 @@ namespace XmlParser
                                 }
                             }
                 }
-            }
-            {
-                collect(("Общая масса брутто", this.grossWeightQuantity.ToString()), book);
-                collect(("Общая масса нетто", this.netWeightQuantity.ToString()), book);
-                collect(("Всего позиций", this.positions.ToString()), book);
-            }
-            foreach ((string, string) pair in awb.Distinct())
-                collect(pair, book);
+            } 
+            collect(("Общая масса брутто", this.grossWeightQuantity.ToString()), book);
+            collect(("Общая масса нетто", this.netWeightQuantity.ToString()), book); 
+            collect(("Всего позиций", this.positions.ToString()), book);
+            foreach ((string, string) pair in awb.Distinct()) collect(pair, book);
             close(book.Item1);
             return this.data;
         }

@@ -6,18 +6,18 @@ namespace XmlParser
 {
     //Adapter pattern
     //Turns xml into links and immediately saves it to the links file
-    public class XmlAdapter : XmlParser.Platform
+    public class XmlAdapter : Platform
     {
         private readonly uint _xmlMarker;
+        private readonly string _fileName; 
         
-        public void CreateLink(string xmlFileName, string innerXml)
+        public void CreateLink(in string innerXml)
         {
-            var nameLink = ConvertToSequence(xmlFileName);
+            var nameLink = ConvertToSequence(this._fileName);
             var documentLink = ConvertToSequence(innerXml);
             Links.GetOrCreate( _xmlMarker, Links.GetOrCreate(nameLink, documentLink));
         }
-
-        /*
+        
         public List<string> GetAllFileNames()
         {
             string name;
@@ -35,41 +35,37 @@ namespace XmlParser
             }, query);
             return names;           
         }
-        */
-        /*
-        private bool IsLinks(Link<uint> query) => this.Links.Count(query) != 0;
-        */
-
-        public (string, string) GetFile(string filename)
-        {
-            var foundLinks = Links.All(Links.GetSource(ConvertToSequence(filename)), Links.Constants.Any);
-
-            var results = (from foundLink in foundLinks let linkIndex = 
-                Links.SearchOrDefault(_xmlMarker, Links.GetIndex(foundLink)) 
-                where linkIndex != default select Links.GetTarget(foundLink)).ToList();
-            return (filename, ConvertToString(results[0]));
-        }
         
-        public (string, List<string>) GetFile(string filename, bool flag)
+        private (string, List<string>, int) GetContentIndexes()
         {
-            if (flag)
-            {
-                var foundLinks = Links.All(Links.GetSource(ConvertToSequence(filename)), Links.Constants.Any);
+            var foundLinks = Links.All(Links.GetSource(ConvertToSequence(this._fileName)), Links.Constants.Any);
 
-                var results = (from foundLink in foundLinks let linkIndex = 
-                    Links.SearchOrDefault(_xmlMarker, 
-                        Links.GetIndex(foundLink)) where linkIndex != 
-                                                         default select ConvertToString(Links.GetTarget(foundLink))).ToList();
-
-                return (filename, results);
-            }
-            else return (GetFile(filename).Item1, new List<string>(){ GetFile(filename).Item2 });
+            var results = 
+                (from foundLink in foundLinks let linkIndex = 
+                    Links.SearchOrDefault(_xmlMarker, Links.GetIndex(foundLink)) where linkIndex != 
+                    default select ConvertToString(Links.GetTarget(foundLink))).ToList();
             
+            return (this._fileName, results, results.Count);
+        }
+
+        public (string, string) GetContent()
+        {
+            var (item1, item2, item3) = GetContentIndexes();
+            return item3 == 1 ? (item1, item2[0]) : default;
         }
         
-        public XmlAdapter()
+        public (string, List<string>) GetContents()
         {
+            var (item1, item2, item3) = GetContentIndexes();
+            return item3 == 1 ? (item1, item2) : default;
+        }
+        
+        public XmlAdapter(string fileName)
+        {
+            this._fileName = fileName;
             _xmlMarker = GetOrCreateNextMapping(CurrentMappingLinkIndex++);
         }
+                
+        private bool IsLinks(Link<uint> query) => this.Links.Count(query) != 0;
     }
 }
