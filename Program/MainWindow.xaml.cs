@@ -3,8 +3,8 @@ using System.Linq;
 using System.Windows;
 using System.IO;
 using System.Xml;
-using DataBase;
 using System;
+
 namespace XmlParser
 {
     public partial class MainWindow : IDefaultSettings

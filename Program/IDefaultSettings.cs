@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-namespace DataBase
+
+namespace XmlParser
 {
     public interface IDefaultSettings
     {

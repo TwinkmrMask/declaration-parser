@@ -4,9 +4,10 @@ using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System.IO;
 using System.Xml;
-using DataBase;
 using System;
 using System.Windows;
+using XmlParser;
+
 namespace XmlParser
 {
     class Handler
@@ -107,7 +108,7 @@ namespace XmlParser
                                             {
                                                 if (doc.Name == "ESADout_CUPresentedDocument")
                                                 {
-                                                    //if (checkDocumentCode(search("catESAD_cu:PresentedDocumentModeCode", doc, "Классификационный номер документа").Item2))
+                                                    if (checkDocumentCode(search("catESAD_cu:PresentedDocumentModeCode", doc, "Классификационный номер документа").Item2))
                                                     {
                                                         add(search("cat_ru:PrDocumentName", doc, "Документ"));
                                                         add(search("cat_ru:PrDocumentNumber", doc, "Номер документа"));
@@ -169,7 +170,7 @@ namespace XmlParser
         }
         private bool checkDocumentCode(string number)
         {
-            using (var data = new DataBase.DataBase())
+            using (var data = new DataBase())
                 return data.TransportCodeEach(number);
         }
         private void calc(string value, ref double result)

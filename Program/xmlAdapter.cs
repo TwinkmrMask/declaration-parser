@@ -2,11 +2,11 @@
 using System.Linq;
 using Platform.Data.Doublets;
 
-namespace DataBase
+namespace XmlParser
 {
     //Adapter pattern
     //Turns xml into links and immediately saves it to the links file
-    public class XmlAdapter : Platform
+    public class XmlAdapter : XmlParser.Platform
     {
         private readonly uint _xmlMarker;
         
@@ -14,36 +14,39 @@ namespace DataBase
         {
             var nameLink = ConvertToSequence(xmlFileName);
             var documentLink = ConvertToSequence(innerXml);
-            links.GetOrCreate( _xmlMarker, links.GetOrCreate(nameLink, documentLink));
+            Links.GetOrCreate( _xmlMarker, Links.GetOrCreate(nameLink, documentLink));
         }
 
+        /*
         public List<string> GetAllFileNames()
         {
             string name;
             var names = new List<string>();
-            var query = new Link<uint>(this.links.Constants.Any, _xmlMarker, this.links.Constants.Any);
+            var query = new Link<uint>(this.Links.Constants.Any, _xmlMarker, this.Links.Constants.Any);
             
             if (!IsLinks(query)) return default;
             
-            this.links.Each((link) =>
+            this.Links.Each((link) =>
             {
-                var doublet = link[this.links.Constants.TargetPart];
-                name = ConvertToString(this.links.GetSource(doublet));
+                var doublet = link[this.Links.Constants.TargetPart];
+                name = ConvertToString(this.Links.GetSource(doublet));
                     names.Add(name);
-                return this.links.Constants.Continue;
+                return this.Links.Constants.Continue;
             }, query);
             return names;           
         }
-
-        private bool IsLinks(Link<uint> query) => this.links.Count(query) != 0;
+        */
+        /*
+        private bool IsLinks(Link<uint> query) => this.Links.Count(query) != 0;
+        */
 
         public (string, string) GetFile(string filename)
         {
-            var foundLinks = links.All(links.GetSource(ConvertToSequence(filename)), links.Constants.Any);
+            var foundLinks = Links.All(Links.GetSource(ConvertToSequence(filename)), Links.Constants.Any);
 
             var results = (from foundLink in foundLinks let linkIndex = 
-                links.SearchOrDefault(_xmlMarker, links.GetIndex(foundLink)) 
-                where linkIndex != default select links.GetTarget(foundLink)).ToList();
+                Links.SearchOrDefault(_xmlMarker, Links.GetIndex(foundLink)) 
+                where linkIndex != default select Links.GetTarget(foundLink)).ToList();
             return (filename, ConvertToString(results[0]));
         }
         
@@ -51,12 +54,12 @@ namespace DataBase
         {
             if (flag)
             {
-                var foundLinks = links.All(links.GetSource(ConvertToSequence(filename)), links.Constants.Any);
+                var foundLinks = Links.All(Links.GetSource(ConvertToSequence(filename)), Links.Constants.Any);
 
                 var results = (from foundLink in foundLinks let linkIndex = 
-                    links.SearchOrDefault(_xmlMarker, 
-                        links.GetIndex(foundLink)) where linkIndex != 
-                                                         default select ConvertToString(links.GetTarget(foundLink))).ToList();
+                    Links.SearchOrDefault(_xmlMarker, 
+                        Links.GetIndex(foundLink)) where linkIndex != 
+                                                         default select ConvertToString(Links.GetTarget(foundLink))).ToList();
 
                 return (filename, results);
             }
@@ -66,7 +69,7 @@ namespace DataBase
         
         public XmlAdapter()
         {
-            _xmlMarker = GetOrCreateNextMapping(currentMappingLinkIndex++);
+            _xmlMarker = GetOrCreateNextMapping(CurrentMappingLinkIndex++);
         }
     }
 }
