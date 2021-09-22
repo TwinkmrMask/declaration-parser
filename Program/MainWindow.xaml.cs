@@ -83,17 +83,15 @@ namespace XmlParser
         {
             if (Data.SelectedItem is not Content path) return;
             var info = new Information(path.FileName);
-            //AddFile(path.FileName);
+            AddFile(path.FileName);
             info.Show();
         }
-        
-        private void AddFile(string name)
+        private static void AddFile(string name)
         {
-            var document = new XmlDocument();
-            document.Load(name);
-            var root = document.DocumentElement;
+            using var reader = XmlReader.Create(name);
+            if (reader.IsEmptyElement) return;
             var adapter = new XmlAdapter(Path.GetFileName(name));
-            if (root != null) adapter.CreateLink(root.InnerXml);
+            adapter.CreateLink(reader.ReadInnerXml());
         }
         
     }
