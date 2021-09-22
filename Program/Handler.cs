@@ -110,7 +110,8 @@ namespace XmlParser
                                             {
                                                 if (doc.Name == "ESADout_CUPresentedDocument")
                                                 {
-                                                    if (checkDocumentCode(search("catESAD_cu:PresentedDocumentModeCode", doc, "Классификационный номер документа").Item2))
+                                                    if (checkDocumentCode(search("catESAD_cu:PresentedDocumentModeCode",
+                                                        doc, "Классификационный номер документа").Item2))
                                                     {
                                                         add(search("cat_ru:PrDocumentName", doc, "Документ"));
                                                         add(search("cat_ru:PrDocumentNumber", doc, "Номер документа"));
