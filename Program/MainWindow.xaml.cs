@@ -19,8 +19,8 @@ namespace XmlParser
             try
             {
                 var openDialog = new Microsoft.Win32.OpenFileDialog { Filter = "Файл Xml|*.xml" };
-                var result = openDialog.ShowDialog();
-                directoryName = System.IO.Path.GetDirectoryName(openDialog.FileName);
+                openDialog.ShowDialog();
+                directoryName = Path.GetDirectoryName(openDialog.FileName);
                 fileName = openDialog.FileName;
             }
             catch (Exception exception1)
@@ -55,18 +55,15 @@ namespace XmlParser
             try
             {
                 GetPath(out this._directoryName, out this._fileName);
-                if ( new string[] { _directoryName, _fileName }.Any(string.IsNullOrWhiteSpace))
-                    throw new System.IO.IOException("Null path");
-                else
-                {
-                    GetFile();
-                    var declarations = _fileNames.Select(item => new Content 
-                        { FileName = item }).ToList();
-                    Data.ItemsSource = declarations;
-                }
+                if ( new[] { _directoryName, _fileName }.Any(string.IsNullOrWhiteSpace))
+                    throw new IOException("Null path");
+                GetFile();
+                var declarations = _fileNames.Select(item => new Content 
+                    { FileName = item }).ToList();
+                Data.ItemsSource = declarations;
             }
 
-            catch (System.IO.IOException e) when (e.Message == "Null path")
+            catch (IOException e) when (e.Message == "Null path")
             {
                 if (MessageBox.Show("Выберите файл или закройте приложение", "Пустой путь", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.OK)
                     SetSource();
@@ -90,8 +87,10 @@ namespace XmlParser
         {
             using var reader = XmlReader.Create(name);
             if (reader.IsEmptyElement) return;
-            var adapter = new XmlAdapter(Path.GetFileName(name));
+            using var adapter = new XmlAdapter(Path.GetFileName(name));
             adapter.CreateLink(reader.ReadInnerXml());
+            foreach (var variable in adapter.GetAllFileNames())
+                MessageBox.Show(variable);
         }
         
     }

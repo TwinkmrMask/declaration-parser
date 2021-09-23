@@ -23,9 +23,9 @@ namespace XmlParser
 
         private void Print(IEnumerable<(string, string)> value)
         {
-            foreach (var item in value.Where(item => 
+            foreach (var (item1, item2) in value.Where(item => 
                 (item.Item1 != null) || (item.Item2 != null)))
-                block.Text += $"{item.Item1} | {item.Item2}\n";
+                block.Text += $"{item1} | {item2}\n";
         }
 
         //toolbar status
@@ -36,7 +36,7 @@ namespace XmlParser
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("ru-ru");
             try
             {
-                Process.Start(Path.GetFullPath(this._handler.GetPath()));
+                Process.Start(Path.GetFullPath(Handler.GetPath()));
             }
             catch (System.ComponentModel.Win32Exception)
             {

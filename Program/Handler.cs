@@ -5,138 +5,113 @@ using NPOI.XSSF.UserModel;
 using System.IO;
 using System.Xml;
 using System;
+using System.Globalization;
 using System.Windows;
-using XmlParser;
+
+#pragma warning disable CA2208
 
 namespace XmlParser
 {
-    class Handler
+    internal class Handler
     {
-        private double netWeightQuantity;
-        private double grossWeightQuantity;
-        private double positions;
-        private List<(string, string)> data;
-        private List<(string, string)> awb;
+        public double NetWeightQuantity;
+        private double _grossWeightQuantity;
+        private double _positions;
+        private readonly List<(string, string)> _data;
+        private readonly List<(string, string)> _awb;
 
-        public Func<string> GetPath = () => IDefaultSettings.NameExcelFile;
+        public static string GetPath () => IDefaultSettings.NameExcelFile;
 
         public Handler()
         {
             try
             {
-                this.grossWeightQuantity = 0;
-                this.netWeightQuantity = 0;
-                this.positions = 0;
-                this.awb = new List<(string, string)>();
-                this.data = new List<(string, string)>(); 
+                _grossWeightQuantity = 0;
+                NetWeightQuantity = 0;
+                _positions = 0;
+                _awb = new List<(string, string)>();
+                _data = new List<(string, string)>(); 
                 IDefaultSettings.AddTransportCodes();
             }
-            catch (Exception exception)
-            {
-                MessageBox.Show(exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            catch (Exception exception) { MessageBox.Show(exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
             finally
             {
-                this.grossWeightQuantity = default;
-                this.netWeightQuantity = default;
-                this.positions = default;
+                this._grossWeightQuantity = default;
+                this.NetWeightQuantity = default;
+                this._positions = default;
             }
         }
         public List<(string, string)> XmlHandler(string path)
         {
-            XmlDocument document = new XmlDocument();
-            
-            try
-            {
-                document.Load(path);
-            }
-            catch
-            {
-               return new List<(string, string)>() { ("Файл повреждён", "Неудалось прочитать файл") } ;
-            }
-            
-            (IWorkbook, ISheet) book = open();
+            var document = new XmlDocument();
+            try { document.Load(path); }
+            catch { return new List<(string, string)>() { ("Файл повреждён", "Неудалось прочитать файл") } ; }
+            var book = open();
 
-            XmlElement root = document.DocumentElement;
-            foreach (XmlElement item in root)
-            { 
-                foreach (XmlNode child in item.ChildNodes)
+            var root = document.DocumentElement ?? throw new ArgumentNullException("document.DocumentElement");
+            foreach (var general in from XmlElement item in root from XmlNode child in item.ChildNodes where child is { HasChildNodes: true } from XmlNode declaration in child.ChildNodes where declaration.Name == "ESADout_CU" from XmlNode general in declaration.ChildNodes select general)
+            {
+                if (general.Name == "ESADout_CUGoodsShipment")
                 {
-                    if (child != null)
-                        if (child.HasChildNodes)
-                            foreach (XmlNode declaration in child.ChildNodes)
+                    Collect(Search("catESAD_cu:TotalPackageNumber", general, "Количество мест"), book);
+                    Collect(Search("catESAD_cu:TotalCustCost", general, "Итоговая таможенная стоимоть"), book);
+                }
+                foreach (XmlNode info in general.ChildNodes)
+                {
+                    switch (info.Name)
+                    {
+                        case "ESADout_CUGoodsLocation":
+                            Collect(Search("CustomsOffice", info, "Пост прибытия"), book);
+                            break;
+                        case "ESADout_CUConsigment":
+                            foreach (XmlNode transport in info.ChildNodes)
+                            foreach(XmlNode unused in transport)
+                                Collect(Search("catESAD_cu:TransportIdentifier", info, "Транспорт"), book);
+                            break;
+                        case "ESADout_CUMainContractTerms":
+                            Collect(Search("catESAD_cu:ContractCurrencyCode", info, "Валюта"), book);
+                            Collect(Search("catESAD_cu:ContractCurrencyRate", info, "Курс"), book);
+                            Collect(Search("catESAD_cu:TotalInvoiceAmount", info, "Итоговая фактурная стоимоть"), book);
+                            break;
+                        case "ESADout_CUGoods":
+                            Calc(Search("catESAD_cu:GrossWeightQuantity", info, "Масса брутто").Item2, ref _grossWeightQuantity);
+                            Calc(Search("catESAD_cu:NetWeightQuantity", info, "Масса нетто").Item2, ref NetWeightQuantity);
+                            break;
+                    }
+                    foreach (XmlNode product in info.ChildNodes)
+                    {
+                        foreach (XmlNode count in product.ChildNodes)
+                            if (count.Name == "catESAD_cu:GoodsGroupInformation")
+                                foreach (var about in count.Cast<XmlNode>().Where(about => about.Name == "catESAD_cu:GoodsGroupQuantity"))
+                                    Calc(Search("catESAD_cu:GoodsQuantity", about, "Количество товара").Item2, ref _positions);
+                    }
+                    foreach (XmlNode doc in info)
+                    {
+                        if (doc.Name == "ESADout_CUPresentedDocument")
+                        {
+                            if (CheckDocumentCode(Search("catESAD_cu:PresentedDocumentModeCode",
+                                doc, "Классификационный номер документа").Item2))
                             {
-                                if (declaration.Name == "ESADout_CU")
-                                {
-                                    foreach (XmlNode general in declaration.ChildNodes)
-                                    {
-                                        if (general.Name == "ESADout_CUGoodsShipment")
-                                        {
-                                            collect(search("catESAD_cu:TotalPackageNumber", general, "Количество мест"), book);
-                                            collect(search("catESAD_cu:TotalCustCost", general, "Итоговая таможенная стоимоть"), book);
-                                        }
-                                        foreach (XmlNode info in general.ChildNodes)
-                                        {
-                                            switch (info.Name)
-                                            {
-                                                case "ESADout_CUGoodsLocation":
-                                                    collect(search("CustomsOffice", info, "Пост прибытия"), book);
-                                                    break;
-                                                case "ESADout_CUConsigment":
-                                                    foreach (XmlNode transport in info.ChildNodes)
-                                                        foreach(XmlNode transportCode in transport)
-                                                            collect(search("catESAD_cu:TransportIdentifier", info, "Транспорт"), book);
-                                                    break;
-                                                case "ESADout_CUMainContractTerms":
-                                                    collect(search("catESAD_cu:ContractCurrencyCode", info, "Валюта"), book);
-                                                    collect(search("catESAD_cu:ContractCurrencyRate", info, "Курс"), book);
-                                                    collect(search("catESAD_cu:TotalInvoiceAmount", info, "Итоговая фактурная стоимоть"), book);
-                                                    break;
-                                                case "ESADout_CUGoods":
-                                                    calc(search("catESAD_cu:GrossWeightQuantity", info, "Масса брутто").Item2, ref this.grossWeightQuantity);
-                                                    calc(search("catESAD_cu:NetWeightQuantity", info, "Масса нетто").Item2, ref this.netWeightQuantity);
-                                                    break;
-                                                default: break;
-                                            }
-                                            foreach (XmlNode product in info.ChildNodes)
-                                            {
-                                                foreach (XmlNode count in product.ChildNodes)
-                                                    if (count.Name == "catESAD_cu:GoodsGroupInformation")
-                                                        foreach (XmlNode about in count)
-                                                            if (about.Name == "catESAD_cu:GoodsGroupQuantity")
-                                                                calc(search("catESAD_cu:GoodsQuantity", about, "Количество товара").Item2, ref this.positions);
-                                            }
-                                            foreach (XmlNode doc in info)
-                                            {
-                                                if (doc.Name == "ESADout_CUPresentedDocument")
-                                                {
-                                                    if (checkDocumentCode(search("catESAD_cu:PresentedDocumentModeCode",
-                                                        doc, "Классификационный номер документа").Item2))
-                                                    {
-                                                        add(search("cat_ru:PrDocumentName", doc, "Документ"));
-                                                        add(search("cat_ru:PrDocumentNumber", doc, "Номер документа"));
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                                Add(Search("cat_ru:PrDocumentName", doc, "Документ"));
+                                Add(Search("cat_ru:PrDocumentNumber", doc, "Номер документа"));
                             }
+                        }
+                    }
                 }
             } 
-            collect(("Общая масса брутто", this.grossWeightQuantity.ToString()), book);
-            collect(("Общая масса нетто", this.netWeightQuantity.ToString()), book); 
-            collect(("Всего позиций", this.positions.ToString()), book);
-            foreach ((string, string) pair in awb.Distinct()) collect(pair, book);
-            close(book.Item1);
-            return this.data;
+            Collect(("Общая масса брутто", this._grossWeightQuantity.ToString(CultureInfo.InvariantCulture)), book);
+            Collect(("Общая масса нетто", this.NetWeightQuantity.ToString(CultureInfo.InvariantCulture)), book); 
+            Collect(("Всего позиций", this._positions.ToString(CultureInfo.InvariantCulture)), book);
+            foreach (var pair in _awb.Distinct()) Collect(pair, book);
+            Close(book.Item1);
+            return this._data;
         }
         
         //auxiliary methods
-        private void close(IWorkbook wb)
+        private static void Close(IWorkbook wb)
         {
             if (!Directory.Exists(IDefaultSettings.DefaultPath)) Directory.CreateDirectory(IDefaultSettings.DefaultPath);
-            using (FileStream fs = new FileStream(GetPath(), FileMode.Create, FileAccess.Write))
+            using (var fs = new FileStream(GetPath(), FileMode.Create, FileAccess.Write))
             {
                 wb.Write(fs);
                 fs.Close();
@@ -150,51 +125,46 @@ namespace XmlParser
             ISheet sh = wb.CreateSheet(sheetName);
             return (wb, sh);
         }
-        private IWorkbook save(in (string, string) row, (IWorkbook, ISheet) book)
+        private void save(in (string, string) row, (IWorkbook, ISheet) book)
         {
-            if (validation(row))
-            {
-                IRow currentRow = book.Item2.CreateRow(book.Item2.LastRowNum + 1);
-                currentRow.CreateCell(0).SetCellValue(row.Item1);
-                book.Item2.AutoSizeColumn(0);
-                currentRow.CreateCell(1).SetCellValue(row.Item2);
-                book.Item2.AutoSizeColumn(1);
-                return book.Item1;
-            }
-            return default;
+            if (!Validation(row)) return;
+            var currentRow = book.Item2.CreateRow(book.Item2.LastRowNum + 1);
+            currentRow.CreateCell(0).SetCellValue(row.Item1);
+            book.Item2.AutoSizeColumn(0);
+            currentRow.CreateCell(1).SetCellValue(row.Item2);
+            book.Item2.AutoSizeColumn(1);
         }
-        private void add((string, string) pair)
+        private void Add((string, string) pair)
         {
-            if (!awb.Contains(pair))
-                awb.Add(pair);
+            if (!_awb.Contains(pair))
+                _awb.Add(pair);
         }
-        private bool checkDocumentCode(string number)
+        private static bool CheckDocumentCode(string number)
         {
-            using (var data = new DataBase())
-                return data.TransportCodeEach(number);
+            using var @base = new DataBase();
+            return @base.TransportCodeEach(number);
         }
-        private void calc(string value, ref double result)
+        private static void Calc(string value, ref double result)
         {
             if(value != null)
-                result += double.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
+                result += double.Parse(value, CultureInfo.InvariantCulture);
         }
-        private (string, string) search(string value, XmlNode collection, string name)
+
+        public static (string, string) Search(string value, XmlNode collection, string name)
         {
             foreach (XmlNode element in collection.ChildNodes)
                 if (element.Name == value)
                     return (name, element.InnerText);
             return default;
         }
-        private IWorkbook collect((string, string) value, (IWorkbook, ISheet) book)
+        private void Collect((string, string) value, (IWorkbook, ISheet) book)
         {
-            data.Add(value);
-            return save(value, book);
+            _data.Add(value);
+            save(value, book);
         }
-        private bool validation((string, string) value)
+        private static bool Validation((string, string) value)
         {
-            if (string.IsNullOrWhiteSpace(value.Item1) && string.IsNullOrWhiteSpace(value.Item2))
-                return false;
-            else return true;
+            return !string.IsNullOrWhiteSpace(value.Item1) || !string.IsNullOrWhiteSpace(value.Item2);
         }
     }
 }

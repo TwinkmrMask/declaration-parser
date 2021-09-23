@@ -11,7 +11,6 @@ using Platform.Data.Doublets.Unicode;
 using Platform.Data.Numbers.Raw;
 using Platform.Disposables;
 using Platform.Memory;
-using XmlParser;
 
 namespace XmlParser
 {
@@ -36,7 +35,7 @@ namespace XmlParser
             _disposableLinks = new UInt32SplitMemoryLinks(dataMemory, indexMemory, UInt32SplitMemoryLinks.DefaultLinksSizeStep, linksConstants); // Low-level logic
             Links = new UInt32Links(_disposableLinks); // Main logic in the combined decorator
 
-            // Set up constant links (markers, aka mapped links)
+            // Set up constant links (markers, aka mapped links)  c
             _meaningRoot = GetOrCreateMeaningRoot(this.CurrentMappingLinkIndex++);
             var unicodeSymbolMarker = GetOrCreateNextMapping(this.CurrentMappingLinkIndex++);
             var unicodeSequenceMarker = GetOrCreateNextMapping(this.CurrentMappingLinkIndex++);
@@ -63,6 +62,7 @@ namespace XmlParser
 
         public uint ConvertToSequence(string @string) => _stringToUnicodeSequenceConverter.Convert(@string);
         
+        protected uint NewMarker()=> GetOrCreateNextMapping(CurrentMappingLinkIndex++);
         protected override void Dispose(bool manual, bool wasDisposed)
         {
             if (!wasDisposed)
