@@ -83,15 +83,13 @@ namespace XmlParser
             AddFile(path.FileName);
             info.Show();
         }
+
         private static void AddFile(string name)
         {
             using var reader = XmlReader.Create(name);
             if (reader.IsEmptyElement) return;
             using var adapter = new XmlAdapter(Path.GetFileName(name));
             adapter.CreateLink(reader.ReadInnerXml());
-            foreach (var variable in adapter.GetAllFileNames())
-                MessageBox.Show(variable);
         }
-        
     }
 }

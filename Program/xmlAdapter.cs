@@ -7,8 +7,8 @@ namespace XmlParser
     //Turns xml into links and immediately saves it to the links file
     public class XmlAdapter : Platform
     {
-        private readonly uint _fileNameMarker;
         private readonly string _fileName;
+        private static uint _fileNameMarker;
 
         private Link<uint> Query(uint marker) => new(this.Links.Constants.Any, marker, this.Links.Constants.Any);
         //private Link<uint> Query(uint marker, string data) => new(this.Links.Constants.Any, marker, ConvertToSequence(data));
@@ -61,11 +61,10 @@ namespace XmlParser
             var (item1, item2, item3) = GetContentIndexes();
             return item3 == 1 ? (item1, item2) : default;
         }
-*/        
-        public XmlAdapter(string fileName)
-        {
-            _fileName = fileName;
-            _fileNameMarker = NewMarker();
+*/
+        public XmlAdapter(out uint marker) : base(out marker) { }
+        public XmlAdapter(string fileName) : this(out _fileNameMarker)
+        { _fileName = fileName;
             //_xmlMarker = GetOrCreateNextMapping(CurrentMappingLinkIndex++);
         }
                 

@@ -4,10 +4,7 @@ namespace XmlParser
 {
     public class DataBase : Platform
     {
-        private readonly uint _codeMarker;
-
-        public DataBase() => _codeMarker= NewMarker();
-
+        private static uint _codeMarker;
         //public void Delete(uint link) => Links.Delete(link);
         public void CreateTransportCodeLink(string transportDocumentCode)
         {
@@ -18,5 +15,9 @@ namespace XmlParser
         //private bool IsLinks(Link<uint> query) => this.Links.Count(query) > 0;
 
         public bool TransportCodeEach(string transportDocumentCode) => this.Links.SearchOrDefault(_codeMarker, ConvertToSequence(transportDocumentCode)) != 0;
+
+        private DataBase(out uint marker) : base(out _) { marker = _codeMarker; }
+
+        public DataBase() : this(out _codeMarker) { }
     }
 }

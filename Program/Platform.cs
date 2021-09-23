@@ -14,6 +14,7 @@ using Platform.Memory;
 
 namespace XmlParser
 {
+    
     //Part of the code, along with comments, is taken from https://github.com/linksplatform/Comparisons.SQLiteVSDoublets/commit/289cf361c82ab605b9ba0d1621496b3401e432f7
     public class Platform : DisposableBase
     {
@@ -22,9 +23,13 @@ namespace XmlParser
         private readonly IConverter<uint, string> _unicodeSequenceToStringConverter;
         private readonly ILinks<uint> _disposableLinks;
         protected readonly ILinks<uint> Links;
-        protected uint CurrentMappingLinkIndex = 1;
+        protected readonly uint CurrentMappingLinkIndex = 1;
 
-        public Platform()
+      // protected readonly uint FileNameMarker;
+      //  protected readonly uint CodeMarker;
+        
+        
+        public Platform(out uint marker)
         {
             var dataMemory = new FileMappedResizableDirectMemory(IDefaultSettings.DataFileName);
             var indexMemory = new FileMappedResizableDirectMemory(IDefaultSettings.IndexFileName);
@@ -36,9 +41,15 @@ namespace XmlParser
             Links = new UInt32Links(_disposableLinks); // Main logic in the combined decorator
 
             // Set up constant links (markers, aka mapped links)  c
-            _meaningRoot = GetOrCreateMeaningRoot(this.CurrentMappingLinkIndex++);
-            var unicodeSymbolMarker = GetOrCreateNextMapping(this.CurrentMappingLinkIndex++);
-            var unicodeSequenceMarker = GetOrCreateNextMapping(this.CurrentMappingLinkIndex++);
+            _meaningRoot = GetOrCreateMeaningRoot(CurrentMappingLinkIndex++);
+            var unicodeSymbolMarker = GetOrCreateNextMapping(CurrentMappingLinkIndex++);
+            var unicodeSequenceMarker = GetOrCreateNextMapping(CurrentMappingLinkIndex++);
+            
+            marker = GetOrCreateNextMapping(CurrentMappingLinkIndex++);
+            ;
+            //FileNameMarker = GetOrCreateNextMapping(CurrentMappingLinkIndex++);
+            //CodeMarker = GetOrCreateNextMapping(CurrentMappingLinkIndex++);
+            
             // Create converters that are able to convert link's address (UInt64 value) to a raw number represented with another UInt64 value and back
             var numberToAddressConverter = new RawNumberToAddressConverter<uint>();
             var addressToNumberConverter = new AddressToRawNumberConverter<uint>();
@@ -53,7 +64,6 @@ namespace XmlParser
             _stringToUnicodeSequenceConverter = new CachingConverterDecorator<string, uint>(new StringToUnicodeSequenceConverter<uint>(Links, charToUnicodeSymbolConverter, balancedVariantConverter, unicodeSequenceMarker));
             _unicodeSequenceToStringConverter = new CachingConverterDecorator<uint, string>(new UnicodeSequenceToStringConverter<uint>(Links, unicodeSequenceCriterionMatcher, sequenceWalker, unicodeSymbolToCharConverter));
         }
-
         private uint GetOrCreateMeaningRoot(uint meaningRootIndex) => Links.Exists(meaningRootIndex) ? meaningRootIndex : Links.CreatePoint();
 
         protected uint GetOrCreateNextMapping(uint currentMappingIndex) => Links.Exists(currentMappingIndex) ? currentMappingIndex : Links.CreateAndUpdate(_meaningRoot, Links.Constants.Itself);
@@ -62,7 +72,7 @@ namespace XmlParser
 
         public uint ConvertToSequence(string @string) => _stringToUnicodeSequenceConverter.Convert(@string);
         
-        protected uint NewMarker()=> GetOrCreateNextMapping(CurrentMappingLinkIndex++);
+        //protected uint NewMarker()=> GetOrCreateNextMapping(CurrentMappingLinkIndex++);
         protected override void Dispose(bool manual, bool wasDisposed)
         {
             if (!wasDisposed)
