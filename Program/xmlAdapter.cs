@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Platform.Data.Doublets;
 
+#pragma warning disable 649
+
 namespace XmlParser
 {
     //Adapter pattern
@@ -8,6 +10,7 @@ namespace XmlParser
     public class XmlAdapter : Platform
     {
         private readonly string _fileName;
+
         private static uint _fileNameMarker;
 
         private Link<uint> Query(uint marker) => new(this.Links.Constants.Any, marker, this.Links.Constants.Any);
@@ -27,13 +30,12 @@ namespace XmlParser
             var query = Query(_fileNameMarker);
             if (!IsLinks(query)) return default;
             
-            this.Links.Each((link) =>
+            Links.Each((link) =>
             {
-                var item = ConvertToString(link[this.Links.Constants.TargetPart]);
+                var item = ConvertToString( Links.GetTarget(link));
                 names.Add(item);
                 return this.Links.Constants.Continue;
             }, query);
-            
             return names;           
         }
         
@@ -62,12 +64,7 @@ namespace XmlParser
             return item3 == 1 ? (item1, item2) : default;
         }
 */
-        public XmlAdapter(out uint marker) : base(out marker) { }
-        public XmlAdapter(string fileName) : this(out _fileNameMarker)
-        { _fileName = fileName;
-            //_xmlMarker = GetOrCreateNextMapping(CurrentMappingLinkIndex++);
-        }
-                
-        private bool IsLinks(Link<uint> query) => this.Links.Count(query) != 0;
+        public XmlAdapter(string fileName) : base(out _fileNameMarker) => this._fileName = fileName;
+        private bool IsLinks(Link<uint> query) => this.Links.Count(query) > 0;
     }
 }

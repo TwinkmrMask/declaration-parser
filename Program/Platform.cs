@@ -23,10 +23,8 @@ namespace XmlParser
         private readonly IConverter<uint, string> _unicodeSequenceToStringConverter;
         private readonly ILinks<uint> _disposableLinks;
         protected readonly ILinks<uint> Links;
-        protected readonly uint CurrentMappingLinkIndex = 1;
+        protected static uint CurrentMappingLinkIndex = 1;
 
-      // protected readonly uint FileNameMarker;
-      //  protected readonly uint CodeMarker;
         
         
         public Platform(out uint marker)
@@ -46,7 +44,6 @@ namespace XmlParser
             var unicodeSequenceMarker = GetOrCreateNextMapping(CurrentMappingLinkIndex++);
             
             marker = GetOrCreateNextMapping(CurrentMappingLinkIndex++);
-            ;
             //FileNameMarker = GetOrCreateNextMapping(CurrentMappingLinkIndex++);
             //CodeMarker = GetOrCreateNextMapping(CurrentMappingLinkIndex++);
             

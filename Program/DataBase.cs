@@ -16,8 +16,6 @@ namespace XmlParser
 
         public bool TransportCodeEach(string transportDocumentCode) => this.Links.SearchOrDefault(_codeMarker, ConvertToSequence(transportDocumentCode)) != 0;
 
-        private DataBase(out uint marker) : base(out _) { marker = _codeMarker; }
-
-        public DataBase() : this(out _codeMarker) { }
+        public DataBase() : base(out _codeMarker) { } 
     }
 }
