@@ -7,7 +7,12 @@
         mc:Ignorable="d"
         Title="Previously used files" Height="450" Width="800">
     <Grid>
-        <ScrollViewer Background="Transparent">
+        <Label Content="Источник:" Margin="1,0,726,402" FontFamily="Comic Sans MS"/>
+        <Label x:Name="Source" Content="" Margin="99,0,567,402" FontFamily="Comic Sans MS"/>
+
+        <Button x:Name="open" Margin="613,0,17,402" Click="open_Click"/>
+        <Button x:Name="change" Margin="438,0,192,402" Visibility="Hidden" Click="change_Click"/>
+        <ScrollViewer Background="Transparent" Margin="0,37,0,0">
             <DataGrid x:Name="Data" GridLinesVisibility="None"  Background="White" RowBackground="Transparent" CanUserAddRows="False">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn>

@@ -46,9 +46,9 @@ namespace XmlParser
             var document = new XmlDocument();
             try { document.Load(path); }
             catch { return new List<(string, string)>() { ("Файл повреждён", "Неудалось прочитать файл") } ; }
-            var book = open();
+            var book = Open();
 
-            var root = document.DocumentElement ?? throw new ArgumentNullException("document.DocumentElement");
+            var root = document.DocumentElement ?? throw new ArgumentNullException(nameof(path));
             foreach (var general in from XmlElement item in root from XmlNode child in item.ChildNodes where child is { HasChildNodes: true } from XmlNode declaration in child.ChildNodes where declaration.Name == "ESADout_CU" from XmlNode general in declaration.ChildNodes select general)
             {
                 if (general.Name == "ESADout_CUGoodsShipment")
@@ -118,11 +118,11 @@ namespace XmlParser
             }
             wb.Close();
         }
-        private (IWorkbook, ISheet) open()
+        private static (IWorkbook, ISheet) Open()
         {
             const string sheetName = "info";
             IWorkbook wb = new XSSFWorkbook();
-            ISheet sh = wb.CreateSheet(sheetName);
+            var sh = wb.CreateSheet(sheetName);
             return (wb, sh);
         }
         private void save(in (string, string) row, (IWorkbook, ISheet) book)

@@ -7,7 +7,7 @@ using System;
 
 namespace XmlParser
 {
-    public partial class MainWindow : IDefaultSettings
+    public partial class MainWindow
     {
         private readonly List<string> _fileNames = new();
         private string _directoryName;
@@ -75,6 +75,7 @@ namespace XmlParser
         {
             InitializeComponent();
             SetSource();
+            //OpenFromDatabase();
         }
         private void Btn_Click(object sender, RoutedEventArgs e)
         {
@@ -88,8 +89,28 @@ namespace XmlParser
         {
             using var reader = XmlReader.Create(name);
             if (reader.IsEmptyElement) return;
-            using var adapter = new XmlAdapter(Path.GetFileName(name));
-            adapter.CreateLink(reader.ReadInnerXml());
+            using var adapter = new XmlAdapter();
+            adapter.InitialMarker();
+            adapter.CreateLink("<a/>", Path.GetFileName(name));
         }
+
+        void OpenFromDatabase()
+        {
+            var contents = new List<Content>();
+            using var @base = new XmlAdapter();
+            var data = @base.GetAllFileNames();
+            if(data != default)
+            foreach (var para in data)
+            {
+                contents.Add(new Content { FileName = para });
+                MessageBox.Show(para);
+            }
+            Data.ItemsSource = contents;
+            Data.Items.Refresh();
+        }
+
+        private void change_Click(object sender, RoutedEventArgs e) {}
+
+        private void open_Click(object sender, RoutedEventArgs e) => OpenFromDatabase();
     }
 }

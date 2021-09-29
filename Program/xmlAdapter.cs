@@ -1,29 +1,24 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
 using Platform.Data.Doublets;
 
 #pragma warning disable 649
 
 namespace XmlParser
 {
-    //Adapter pattern
-    //Turns xml into links and immediately saves it to the links file
-    public class XmlAdapter : Platform
+    public class XmlAdapter : Platform, IDefaultSettings
     {
-        private readonly string _fileName;
-
         private static uint _fileNameMarker;
 
         private Link<uint> Query(uint marker) => new(this.Links.Constants.Any, marker, this.Links.Constants.Any);
-        //private Link<uint> Query(uint marker, string data) => new(this.Links.Constants.Any, marker, ConvertToSequence(data));
-            
-        public void CreateLink(in string innerXml)
+        public void CreateLink(in string innerXml, string filename)
         {
-            var nameLink = ConvertToSequence(this._fileName);
+            var nameLink = ConvertToSequence(filename);
             var documentLink = ConvertToSequence(innerXml);
             Links.GetOrCreate(_fileNameMarker, nameLink);
             Links.GetOrCreate(nameLink, documentLink);
         }
-        
         public List<string> GetAllFileNames()
         {
             var names = new List<string>();
@@ -32,39 +27,15 @@ namespace XmlParser
             
             Links.Each((link) =>
             {
-                var item = ConvertToString( Links.GetTarget(link));
+                var item = ConvertToString(link[this.Links.Constants.TargetPart]);
                 names.Add(item);
                 return this.Links.Constants.Continue;
             }, query);
-            return names;           
+            return names;
         }
-        
-        /*
-        private (string, List<string>, int) GetContentIndexes()
-        {
-            var foundLinks = Links.All(Links.GetSource(ConvertToSequence(this._fileName)), Links.Constants.Any);
-
-            var results = 
-                (from foundLink in foundLinks let linkIndex = 
-                    Links.SearchOrDefault(_xmlMarker, Links.GetIndex(foundLink)) where linkIndex != 
-                    default select ConvertToString(Links.GetTarget(foundLink))).ToList();
-            
-            return (this._fileName, results, results.Count);
-        }
-
-        public (string, string) GetContent()
-        {
-            var (item1, item2, item3) = GetContentIndexes();
-            return item3 == 1 ? (item1, item2[0]) : default;
-        }
-        
-        public (string, List<string>) GetContents()
-        {
-            var (item1, item2, item3) = GetContentIndexes();
-            return item3 == 1 ? (item1, item2) : default;
-        }
-*/
-        public XmlAdapter(string fileName) : base(out _fileNameMarker) => this._fileName = fileName;
+        public void InitialMarker() => _fileNameMarker = GetOrCreateNextMapping(_currentMappingLinkIndex++);
+        public string GetContent(string filename) => ConvertToString(Links.GetSource(Links.SearchOrDefault(ConvertToSequence(filename), this.Links.Constants.Any)));
         private bool IsLinks(Link<uint> query) => this.Links.Count(query) > 0;
     }
 }
+ 

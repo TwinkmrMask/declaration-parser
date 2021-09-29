@@ -2,20 +2,11 @@
 
 namespace XmlParser
 {
-    public class DataBase : Platform
+    public class DataBase : Platform, IDefaultSettings
     {
         private static uint _codeMarker;
-        //public void Delete(uint link) => Links.Delete(link);
-        public void CreateTransportCodeLink(string transportDocumentCode)
-        {
-            var link = ConvertToSequence(transportDocumentCode);
-            Links.GetOrCreate(_codeMarker, link);
-        }
-        
-        //private bool IsLinks(Link<uint> query) => this.Links.Count(query) > 0;
-
+        public void CreateTransportCodeLink(string transportDocumentCode) => Links.GetOrCreate(_codeMarker, ConvertToSequence(transportDocumentCode));
         public bool TransportCodeEach(string transportDocumentCode) => this.Links.SearchOrDefault(_codeMarker, ConvertToSequence(transportDocumentCode)) != 0;
-
-        public DataBase() : base(out _codeMarker) { } 
+        public void InitialMarker() => _codeMarker = GetOrCreateNextMapping(_currentMappingLinkIndex++);
     }
 }
