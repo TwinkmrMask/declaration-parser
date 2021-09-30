@@ -33,7 +33,7 @@ namespace XmlParser
             }, query);
             return names;
         }
-        public void InitialMarker() => _fileNameMarker = GetOrCreateNextMapping(_currentMappingLinkIndex++);
+        public void InitialMarker() => _fileNameMarker = GetOrCreateMarker(IDefaultSettings._currentMappingLinkIndex++);
         public string GetContent(string filename) => ConvertToString(Links.GetSource(Links.SearchOrDefault(ConvertToSequence(filename), this.Links.Constants.Any)));
         private bool IsLinks(Link<uint> query) => this.Links.Count(query) > 0;
     }

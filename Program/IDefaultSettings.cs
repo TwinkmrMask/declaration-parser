@@ -26,6 +26,8 @@ namespace XmlParser
                 data.CreateTransportCodeLink(code);
         }
 
+        static uint _currentMappingLinkIndex = 1;
+
         void InitialMarker();
     }
 }

@@ -8,8 +8,6 @@ using System;
 using System.Globalization;
 using System.Windows;
 
-#pragma warning disable CA2208
-
 namespace XmlParser
 {
     internal class Handler
