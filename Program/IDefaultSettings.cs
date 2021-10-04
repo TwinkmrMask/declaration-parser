@@ -21,13 +21,8 @@ namespace XmlParser
         static void AddTransportCodes()
         {
             using var data = new DataBase();
-            data.InitialMarker();
             foreach (var code in TransportDocumentCodes)
                 data.CreateTransportCodeLink(code);
         }
-
-        static uint _currentMappingLinkIndex = 1;
-
-        void InitialMarker();
     }
 }

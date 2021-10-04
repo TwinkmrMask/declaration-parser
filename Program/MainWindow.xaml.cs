@@ -75,7 +75,6 @@ namespace XmlParser
         {
             InitializeComponent();
             SetSource();
-            //OpenFromDatabase();
         }
         private void Btn_Click(object sender, RoutedEventArgs e)
         {
@@ -90,7 +89,6 @@ namespace XmlParser
             using var reader = XmlReader.Create(name);
             if (reader.IsEmptyElement) return;
             using var adapter = new XmlAdapter();
-            adapter.InitialMarker();
             adapter.CreateLink("<a/>", Path.GetFileName(name));
         }
 
@@ -101,10 +99,7 @@ namespace XmlParser
             var data = @base.GetAllFileNames();
             if(data != default)
             foreach (var para in data)
-            {
                 contents.Add(new Content { FileName = para });
-                MessageBox.Show(para);
-            }
             Data.ItemsSource = contents;
             Data.Items.Refresh();
         }

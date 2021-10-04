@@ -9,7 +9,7 @@ namespace XmlParser
 {
     public class XmlAdapter : Platform, IDefaultSettings
     {
-        private static uint _fileNameMarker;
+        private const uint _fileNameMarker = 5;
 
         private Link<uint> Query(uint marker) => new(this.Links.Constants.Any, marker, this.Links.Constants.Any);
         public void CreateLink(in string innerXml, string filename)
@@ -23,17 +23,16 @@ namespace XmlParser
         {
             var names = new List<string>();
             var query = Query(_fileNameMarker);
-            if (!IsLinks(query)) return default;
-            
+            if (!IsLinks(query)) { return default; }
+
             Links.Each((link) =>
             {
-                var item = ConvertToString(link[this.Links.Constants.TargetPart]);
+                var item = ConvertToString(Links.GetTarget(link));
                 names.Add(item);
                 return this.Links.Constants.Continue;
             }, query);
             return names;
         }
-        public void InitialMarker() => _fileNameMarker = GetOrCreateMarker(IDefaultSettings._currentMappingLinkIndex++);
         public string GetContent(string filename) => ConvertToString(Links.GetSource(Links.SearchOrDefault(ConvertToSequence(filename), this.Links.Constants.Any)));
         private bool IsLinks(Link<uint> query) => this.Links.Count(query) > 0;
     }

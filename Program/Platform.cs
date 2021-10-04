@@ -23,28 +23,33 @@ namespace XmlParser
         private const uint meaningRootIndex = 1;
         AddressToRawNumberConverter<uint> _addressToNumberConverter;
 
-
         protected Platform()
         {
             var dataMemory = new FileMappedResizableDirectMemory(IDefaultSettings.DataFileName);
             var indexMemory = new FileMappedResizableDirectMemory(IDefaultSettings.IndexFileName);
             var linksConstants = new LinksConstants<uint>(enableExternalReferencesSupport: true);
-            _disposableLinks = new UInt32SplitMemoryLinks(dataMemory, indexMemory, UInt32SplitMemoryLinks.DefaultLinksSizeStep, linksConstants); 
-            Links = new UInt32Links(_disposableLinks); 
+
+            _disposableLinks = new UInt32SplitMemoryLinks(dataMemory, indexMemory, UInt32SplitMemoryLinks.DefaultLinksSizeStep, linksConstants);
+
+            Links = new UInt32Links(_disposableLinks);
+
             _addressToNumberConverter = new AddressToRawNumberConverter<uint>();
-            var unicodeSymbolMarker = GetOrCreateMarker(IDefaultSettings._currentMappingLinkIndex++);
-            var unicodeSequenceMarker = GetOrCreateMarker(IDefaultSettings._currentMappingLinkIndex++);
-            var numberToAddressConverter = new RawNumberToAddressConverter<uint>();
-            var balancedVariantConverter = new BalancedVariantConverter<uint>(Links);
-            var unicodeSymbolCriterionMatcher = new TargetMatcher<uint>(Links, unicodeSymbolMarker);
-            var unicodeSequenceCriterionMatcher = new TargetMatcher<uint>(Links, unicodeSequenceMarker);
-            var charToUnicodeSymbolConverter = new CharToUnicodeSymbolConverter<uint>(Links, _addressToNumberConverter, unicodeSymbolMarker);
-            var unicodeSymbolToCharConverter = new UnicodeSymbolToCharConverter<uint>(Links, numberToAddressConverter, unicodeSymbolCriterionMatcher);
-            var sequenceWalker = new RightSequenceWalker<uint>(Links, new DefaultStack<uint>(), unicodeSymbolCriterionMatcher.IsMatched);
-            _stringToUnicodeSequenceConverter = new CachingConverterDecorator<string, uint>(new StringToUnicodeSequenceConverter<uint>(Links, charToUnicodeSymbolConverter, balancedVariantConverter, unicodeSequenceMarker));
-            _unicodeSequenceToStringConverter = new CachingConverterDecorator<uint, string>(new UnicodeSequenceToStringConverter<uint>(Links, unicodeSequenceCriterionMatcher, sequenceWalker, unicodeSymbolToCharConverter));
+
+            const uint unicodeSymbolMarker = 2;
+            const uint unicodeSequenceMarker = 3;
+
+            var unicodeSymbolCriterionMatcher = new TargetMatcher<uint>(Links , unicodeSymbolMarker);
+
+            _stringToUnicodeSequenceConverter = new CachingConverterDecorator<string, uint>
+                (new StringToUnicodeSequenceConverter<uint>(Links, 
+                new CharToUnicodeSymbolConverter<uint>(Links, _addressToNumberConverter, unicodeSymbolMarker),
+                new BalancedVariantConverter<uint>(Links), unicodeSequenceMarker));
+
+            _unicodeSequenceToStringConverter = new CachingConverterDecorator<uint, string>(new UnicodeSequenceToStringConverter<uint>
+                (Links, new TargetMatcher<uint>(Links, unicodeSequenceMarker), new RightSequenceWalker<uint>(Links, new DefaultStack<uint>(), 
+                unicodeSymbolCriterionMatcher.IsMatched),
+                new UnicodeSymbolToCharConverter<uint>(Links, new RawNumberToAddressConverter<uint>(), unicodeSymbolCriterionMatcher)));
         }
-        //private uint GetOrCreateMeaningRoot() => Links.Exists(meaningRootIndex) ? meaningRootIndex : Links.CreatePoint();
         protected uint GetOrCreateMarker(uint currentMappingIndex) => Links.GetOrCreate(meaningRootIndex, _addressToNumberConverter.Convert(currentMappingIndex));
         protected string ConvertToString(uint sequence) => _unicodeSequenceToStringConverter.Convert(sequence);
         protected uint ConvertToSequence(string @string) => _stringToUnicodeSequenceConverter.Convert(@string);
