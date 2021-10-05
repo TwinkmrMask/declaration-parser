@@ -20,8 +20,8 @@ namespace XmlParser
         private readonly IConverter<uint, string> _unicodeSequenceToStringConverter;
         private readonly ILinks<uint> _disposableLinks;
         protected readonly ILinks<uint> Links;
-        private const uint meaningRootIndex = 1;
-        AddressToRawNumberConverter<uint> _addressToNumberConverter;
+        private const uint MeaningRootIndex = 1;
+        private readonly AddressToRawNumberConverter<uint> _addressToNumberConverter;
 
         protected Platform()
         {
@@ -50,7 +50,7 @@ namespace XmlParser
                 unicodeSymbolCriterionMatcher.IsMatched),
                 new UnicodeSymbolToCharConverter<uint>(Links, new RawNumberToAddressConverter<uint>(), unicodeSymbolCriterionMatcher)));
         }
-        protected uint GetOrCreateMarker(uint currentMappingIndex) => Links.GetOrCreate(meaningRootIndex, _addressToNumberConverter.Convert(currentMappingIndex));
+        protected uint GetOrCreateMarker(uint currentMappingIndex) => Links.GetOrCreate(MeaningRootIndex, _addressToNumberConverter.Convert(currentMappingIndex));
         protected string ConvertToString(uint sequence) => _unicodeSequenceToStringConverter.Convert(sequence);
         protected uint ConvertToSequence(string @string) => _stringToUnicodeSequenceConverter.Convert(@string);
         protected override void Dispose(bool manual, bool wasDisposed)

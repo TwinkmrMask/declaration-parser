@@ -92,20 +92,16 @@ namespace XmlParser
             adapter.CreateLink("<a/>", Path.GetFileName(name));
         }
 
-        void OpenFromDatabase()
+        private void OpenFromDatabase()
         {
             var contents = new List<Content>();
             using var @base = new XmlAdapter();
             var data = @base.GetAllFileNames();
-            if(data != default)
-            foreach (var para in data)
-                contents.Add(new Content { FileName = para });
+            if(data != default) contents.AddRange(data.Select(para => new Content { FileName = para }));
             Data.ItemsSource = contents;
             Data.Items.Refresh();
         }
-
-        private void change_Click(object sender, RoutedEventArgs e) {}
-
-        private void open_Click(object sender, RoutedEventArgs e) => OpenFromDatabase();
+        private void Change_Click(object sender, RoutedEventArgs e) {}
+        private void Open_Click(object sender, RoutedEventArgs e) => OpenFromDatabase();
     }
 }

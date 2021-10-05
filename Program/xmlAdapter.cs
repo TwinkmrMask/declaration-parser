@@ -9,30 +9,27 @@ namespace XmlParser
 {
     public class XmlAdapter : Platform, IDefaultSettings
     {
-        private const uint _fileNameMarker = 50;
+        private const uint FileNameMarker = 50;
 
         private Link<uint> Query(uint marker) => new(this.Links.Constants.Any, marker, this.Links.Constants.Any);
         public void CreateLink(in string innerXml, string filename)
         {
             var nameLink = ConvertToSequence(filename);
             var documentLink = ConvertToSequence(innerXml);
-            Links.GetOrCreate(_fileNameMarker, nameLink);
+            Links.GetOrCreate(FileNameMarker, nameLink);
             Links.GetOrCreate(nameLink, documentLink);
         }
 
         public List<string> GetAllFileNames()
         {
             var names = new List<string>();
-            var query = Query(_fileNameMarker);
+            var query = Query(FileNameMarker);
             if (!IsLinks(query)) { return default; }
 
             Links.Each((link) =>
             {
-                if (link != default)
-                {
-                    var item = ConvertToString(Links.GetTarget(link));
-                    names.Add(item);
-                }
+                var item = ConvertToString(Links.GetTarget(link));
+                names.Add(item);
                 return this.Links.Constants.Continue;
             }, query);
             return names;
@@ -40,7 +37,7 @@ namespace XmlParser
         public string GetContent(string filename) => ConvertToString(Links.GetSource(Links.SearchOrDefault(ConvertToSequence(filename), this.Links.Constants.Any)));
         private bool IsLinks(Link<uint> query) => this.Links.Count(query) > 0;
 
-        public XmlAdapter() => GetOrCreateMarker(_fileNameMarker);
+        public XmlAdapter() => GetOrCreateMarker(FileNameMarker);
     }
 }
  
