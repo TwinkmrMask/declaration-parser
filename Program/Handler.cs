@@ -5,11 +5,13 @@ using NPOI.XSSF.UserModel;
 using System.IO;
 using System.Xml;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Windows;
 
 namespace XmlParser
 {
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
     internal class Handler
     {
         public double NetWeightQuantity;
