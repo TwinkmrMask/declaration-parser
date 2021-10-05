@@ -63,8 +63,8 @@ namespace XmlParser
                             break;
                         case "ESADout_CUConsigment":
                             foreach (XmlNode transport in info.ChildNodes)
-                            foreach(XmlNode unused in transport)
-                                Collect(Search("catESAD_cu:TransportIdentifier", info, "Транспорт"), book);
+                                foreach(XmlNode unused in transport)
+                                    Collect(Search("catESAD_cu:TransportIdentifier", info, "Транспорт"), book);
                             break;
                         case "ESADout_CUMainContractTerms":
                             Collect(Search("catESAD_cu:ContractCurrencyCode", info, "Валюта"), book);
