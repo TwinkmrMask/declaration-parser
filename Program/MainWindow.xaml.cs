@@ -109,8 +109,8 @@ namespace XmlParser
                 _dataBaseFlag = true;
             else _dataBaseFlag = false;
 
-            var contents = new List<Content>();
-            using var @base = new XmlAdapter();
+            List<Content> contents = new();
+            using XmlAdapter @base = new();
             var data = @base.GetAllFileNames();
             if(data != default) contents.AddRange(data.Select(para => new Content { FileName = para }));
             Data.ItemsSource = contents;
