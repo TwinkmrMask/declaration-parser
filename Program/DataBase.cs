@@ -4,9 +4,9 @@ namespace XmlParser
 {
     public class DataBase : Platform
     {
-        private uint CodeMarker;
-        public void CreateTransportCodeLink(string transportDocumentCode) => Links.GetOrCreate(CodeMarker, ConvertToSequence(transportDocumentCode));
-        public bool TransportCodeEach(string transportDocumentCode) => this.Links.SearchOrDefault(CodeMarker, ConvertToSequence(transportDocumentCode)) != 0;
-        public DataBase() => CodeMarker = Links.GetOrCreate(ConvertToSequence("CodeMarker"), ConvertToSequence("CodeMarker"));
+        private readonly uint _codeMarker;
+        public void CreateTransportCodeLink(string transportDocumentCode) => Links.GetOrCreate(_codeMarker, ConvertToSequence(transportDocumentCode));
+        public bool TransportCodeEach(string transportDocumentCode) => this.Links.SearchOrDefault(_codeMarker, ConvertToSequence(transportDocumentCode)) != 0;
+        public DataBase() => _codeMarker = Links.GetOrCreate(ConvertToSequence("CodeMarker"), ConvertToSequence("CodeMarker"));
     }
 }

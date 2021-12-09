@@ -8,8 +8,6 @@ namespace XmlParser
         static string NameExcelFile => DefaultPath + "declarationInfo.xlsx";
         static string IndexFileName => DefaultPath + "links";
         static string DataFileName => DefaultPath + "db";
-        public static List<uint> markers = new();
-
         private static readonly List<string> TransportDocumentCodes = new()
         {
             "02011", "02012", "02013",

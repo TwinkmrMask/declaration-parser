@@ -14,7 +14,7 @@ namespace XmlParser
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     internal class Handler
     {
-        public double NetWeightQuantity;
+        private double _netWeightQuantity;
         private double _grossWeightQuantity;
         private double _positions;
         private readonly List<(string, string)> _data;
@@ -27,7 +27,7 @@ namespace XmlParser
             try
             {
                 _grossWeightQuantity = 0;
-                NetWeightQuantity = 0;
+                _netWeightQuantity = 0;
                 _positions = 0;
                 _awb = new List<(string, string)>();
                 _data = new List<(string, string)>(); 
@@ -37,7 +37,7 @@ namespace XmlParser
             finally
             {
                 this._grossWeightQuantity = default;
-                this.NetWeightQuantity = default;
+                this._netWeightQuantity = default;
                 this._positions = default;
             }
         }
@@ -76,7 +76,7 @@ namespace XmlParser
                             break;
                         case "ESADout_CUGoods":
                             Calc(Search("catESAD_cu:GrossWeightQuantity", info, "Масса брутто").Item2, ref _grossWeightQuantity);
-                            Calc(Search("catESAD_cu:NetWeightQuantity", info, "Масса нетто").Item2, ref NetWeightQuantity);
+                            Calc(Search("catESAD_cu:NetWeightQuantity", info, "Масса нетто").Item2, ref _netWeightQuantity);
                             break;
                     }
                     foreach (XmlNode product in info.ChildNodes)
@@ -101,7 +101,7 @@ namespace XmlParser
                 }
             } 
             Collect(("Общая масса брутто", this._grossWeightQuantity.ToString(CultureInfo.InvariantCulture)), book);
-            Collect(("Общая масса нетто", this.NetWeightQuantity.ToString(CultureInfo.InvariantCulture)), book); 
+            Collect(("Общая масса нетто", this._netWeightQuantity.ToString(CultureInfo.InvariantCulture)), book); 
             Collect(("Всего позиций", this._positions.ToString(CultureInfo.InvariantCulture)), book);
             foreach (var pair in _awb.Distinct()) Collect(pair, book);
             Close(book.Item1);

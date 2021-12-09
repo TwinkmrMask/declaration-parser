@@ -7,21 +7,21 @@ namespace XmlParser
 {
     public class XmlAdapter : Platform
     {
-        private readonly uint FileNameMarker;
+        private readonly uint _fileNameMarker;
 
         private Link<uint> Query(uint marker) => new(this.Links.Constants.Any, marker, this.Links.Constants.Any);
         public void CreateLink(in string innerXml, string filename)
         {
             var nameLink = ConvertToSequence(filename);
             var documentLink = ConvertToSequence(innerXml);
-            Links.GetOrCreate(FileNameMarker, nameLink);
+            Links.GetOrCreate(_fileNameMarker, nameLink);
             Links.GetOrCreate(nameLink, documentLink);
         }
 
         public List<string> GetAllFileNames()
         {
             var names = new List<string>();
-            var query = Query(FileNameMarker);
+            var query = Query(_fileNameMarker);
             if (!IsLinks(query)) { return default; }
 
             Links.Each((link) =>
@@ -39,7 +39,7 @@ namespace XmlParser
         }
         private bool IsLinks(Link<uint> query) => this.Links.Count(query) > 0;
 
-        public XmlAdapter() => FileNameMarker = Links.GetOrCreate(ConvertToSequence("FileNameMarker"), ConvertToSequence("FileNameMarker"));
+        public XmlAdapter() => _fileNameMarker = Links.GetOrCreate(ConvertToSequence("FileNameMarker"), ConvertToSequence("FileNameMarker"));
     }
 }
  
