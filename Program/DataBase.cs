@@ -2,12 +2,11 @@
 
 namespace XmlParser
 {
-    public class DataBase : Platform, IDefaultSettings
+    public class DataBase : Platform
     {
-        private const uint CodeMarker = 21;
+        private uint CodeMarker;
         public void CreateTransportCodeLink(string transportDocumentCode) => Links.GetOrCreate(CodeMarker, ConvertToSequence(transportDocumentCode));
         public bool TransportCodeEach(string transportDocumentCode) => this.Links.SearchOrDefault(CodeMarker, ConvertToSequence(transportDocumentCode)) != 0;
-
-        public DataBase() => GetOrCreateMarker(CodeMarker);
+        public DataBase() => CodeMarker = Links.GetOrCreate(ConvertToSequence("CodeMarker"), ConvertToSequence("CodeMarker"));
     }
 }

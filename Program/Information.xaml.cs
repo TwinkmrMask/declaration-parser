@@ -8,10 +8,10 @@ namespace XmlParser
     public partial class Information
     {
         private readonly Handler _handler;
-        public Information(string path)
+        public Information(string path, bool flag)
         {
             InitializeComponent();
-            _handler = new Handler();
+            _handler = new();
             Start(path);
         }
         private void ToolbarStatus(string status) => toolbar.Content = status;

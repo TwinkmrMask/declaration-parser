@@ -44,6 +44,7 @@ namespace XmlParser
         public List<(string, string)> XmlHandler(string path)
         {
             var document = new XmlDocument();
+            
             try { document.Load(path); }
             catch { return new List<(string, string)>() { ("Файл повреждён", "Неудалось прочитать файл") } ; }
             var book = Open();

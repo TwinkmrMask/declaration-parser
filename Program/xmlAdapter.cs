@@ -5,9 +5,9 @@ using Platform.Data.Doublets;
 
 namespace XmlParser
 {
-    public class XmlAdapter : Platform, IDefaultSettings
+    public class XmlAdapter : Platform
     {
-        private const uint FileNameMarker = 50;
+        private readonly uint FileNameMarker;
 
         private Link<uint> Query(uint marker) => new(this.Links.Constants.Any, marker, this.Links.Constants.Any);
         public void CreateLink(in string innerXml, string filename)
@@ -32,10 +32,14 @@ namespace XmlParser
             }, query);
             return names;
         }
-        public string GetContent(string filename) => ConvertToString(Links.GetSource(Links.SearchOrDefault(ConvertToSequence(filename), this.Links.Constants.Any)));
+        public string GetContent(string filename)
+        {
+            var query = Query(ConvertToSequence(filename));
+            return ConvertToString(Links.GetTarget(query));
+        }
         private bool IsLinks(Link<uint> query) => this.Links.Count(query) > 0;
 
-        public XmlAdapter() => GetOrCreateMarker(FileNameMarker);
+        public XmlAdapter() => FileNameMarker = Links.GetOrCreate(ConvertToSequence("FileNameMarker"), ConvertToSequence("FileNameMarker"));
     }
 }
  

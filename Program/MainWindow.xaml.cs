@@ -12,8 +12,10 @@ namespace XmlParser
         private readonly List<string> _fileNames = new();
         private string _directoryName;
         private string _fileName;
-
+        private bool _dataBaseFlag = false;
         private static void Copy(string text) => Clipboard.SetText(text);
+        
+        //получает путь к лбрабаываемому файлуки
         private static void GetPath(out string directoryName, out string fileName)
         {
             try
@@ -78,9 +80,18 @@ namespace XmlParser
         }
         private void Btn_Click(object sender, RoutedEventArgs e)
         {
+            Information info;
             if (Data.SelectedItem is not Content path) return;
-            var info = new Information(path.FileName);
-            AddFile(path.FileName);
+            if (_dataBaseFlag)
+            {
+                using XmlAdapter adapter = new();
+                info = new(adapter.GetContent(path.FileName), _dataBaseFlag);
+            }
+            else
+            {                
+                info = new(path.FileName, _dataBaseFlag);
+                AddFile(path.FileName);
+            }
             info.Show();
         }
 
@@ -88,12 +99,16 @@ namespace XmlParser
         {
             using var reader = XmlReader.Create(name);
             if (reader.IsEmptyElement) return;
-            using var adapter = new XmlAdapter();
+            using XmlAdapter adapter = new();
             adapter.CreateLink("<a/>", Path.GetFileName(name));
         }
 
         private void OpenFromDatabase()
         {
+            if (_dataBaseFlag == false)
+                _dataBaseFlag = true;
+            else _dataBaseFlag = false;
+
             var contents = new List<Content>();
             using var @base = new XmlAdapter();
             var data = @base.GetAllFileNames();
