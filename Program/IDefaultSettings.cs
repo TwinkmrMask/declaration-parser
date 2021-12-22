@@ -8,7 +8,8 @@ namespace XmlParser
         static string NameExcelFile => DefaultPath + "declarationInfo.xlsx";
         static string IndexFileName => DefaultPath + "links";
         static string DataFileName => DefaultPath + "db";
-        private static readonly List<string> TransportDocumentCodes = new()
+
+        static readonly List<string> TransportDocumentCodes = new()
         {
             "02011", "02012", "02013",
             "02014", "02015", "02016",
@@ -17,11 +18,5 @@ namespace XmlParser
             "02024", "02025", "02099"
         };
         
-        static void AddTransportCodes()
-        {
-            using var data = new DataBase();
-            foreach (var code in TransportDocumentCodes)
-                data.CreateTransportCodeLink(code);
-        }
     }
 }

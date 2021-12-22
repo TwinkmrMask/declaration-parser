@@ -35,11 +35,20 @@ namespace XmlParser
         public string GetContent(string filename)
         {
             var query = Query(ConvertToSequence(filename));
-            return ConvertToString(Links.GetTarget(query));
+            string item = default;
+            if (!IsLinks(query)) { return default; }
+
+            Links.Each((link) =>
+            {
+                if (Links.GetSource(ConvertToSequence(filename)) != _fileNameMarker)
+                    item = ConvertToString(Links.GetTarget(ConvertToSequence(filename)));
+                return this.Links.Constants.Continue;
+            }, query);
+            return item;
         }
         private bool IsLinks(Link<uint> query) => this.Links.Count(query) > 0;
 
-        public XmlAdapter() => _fileNameMarker = Links.GetOrCreate(ConvertToSequence("FileNameMarker"), ConvertToSequence("FileNameMarker"));
+        public XmlAdapter() => _fileNameMarker = Links.GetOrCreate(ConvertToSequence(nameof(_fileNameMarker)), ConvertToSequence(nameof(_fileNameMarker)));
     }
 }
  

@@ -15,7 +15,7 @@ namespace XmlParser
         private bool _dataBaseFlag = false;
         private static void Copy(string text) => Clipboard.SetText(text);
         
-        //получает путь к лбрабаываемому файлуки
+        //получает путь к обрабаываемому файлу
         private static void GetPath(out string directoryName, out string fileName)
         {
             try
@@ -94,15 +94,15 @@ namespace XmlParser
             }
             info.Show();
         }
-
         private static void AddFile(string name)
         {
             using var reader = XmlReader.Create(name);
             if (reader.IsEmptyElement) return;
             using XmlAdapter adapter = new();
-            adapter.CreateLink("<a/>", Path.GetFileName(name));
+            string xml = reader.ReadInnerXml();
+            string filename = Path.GetFileName(name);
+            adapter.CreateLink(xml, filename);
         }
-
         private void OpenFromDatabase()
         {
             if (_dataBaseFlag == false)

@@ -11,7 +11,6 @@ using System.Windows;
 
 namespace XmlParser
 {
-    [SuppressMessage("ReSharper", "StringLiteralTypo")]
     internal class Handler
     {
         private double _netWeightQuantity;
@@ -30,8 +29,7 @@ namespace XmlParser
                 _netWeightQuantity = 0;
                 _positions = 0;
                 _awb = new List<(string, string)>();
-                _data = new List<(string, string)>(); 
-                IDefaultSettings.AddTransportCodes();
+                _data = new List<(string, string)>();
             }
             catch (Exception exception) { MessageBox.Show(exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
             finally
@@ -41,15 +39,20 @@ namespace XmlParser
                 this._positions = default;
             }
         }
-        public List<(string, string)> XmlHandler(string path)
+
+        public List<(string, string)> XmlHandler(in string file)
         {
             var document = new XmlDocument();
-            
-            try { document.Load(path); }
-            catch { return new List<(string, string)>() { ("Файл повреждён", "Неудалось прочитать файл") } ; }
+            try
+            {
+                if (File.Exists(file)) document.Load(file);
+                else document.LoadXml(file);
+            }
+            catch { return new List<(string, string)>() { ("Файл повреждён", "Неудалось прочитать файл") }; }
+
             var book = Open();
 
-            var root = document.DocumentElement ?? throw new ArgumentNullException(nameof(path));
+            var root = document.DocumentElement ?? throw new ArgumentNullException(nameof(file));
             foreach (var general in from XmlElement item in root from XmlNode child in item.ChildNodes where child is { HasChildNodes: true } from XmlNode declaration in child.ChildNodes where declaration.Name == "ESADout_CU" from XmlNode general in declaration.ChildNodes select general)
             {
                 if (general.Name == "ESADout_CUGoodsShipment")
@@ -126,7 +129,7 @@ namespace XmlParser
             var sh = wb.CreateSheet(sheetName);
             return (wb, sh);
         }
-        private void save(in (string, string) row, (IWorkbook, ISheet) book)
+        private void Save(in (string, string) row, (IWorkbook, ISheet) book)
         {
             if (!Validation(row)) return;
             var currentRow = book.Item2.CreateRow(book.Item2.LastRowNum + 1);
@@ -140,17 +143,12 @@ namespace XmlParser
             if (!_awb.Contains(pair))
                 _awb.Add(pair);
         }
-        private static bool CheckDocumentCode(string number)
-        {
-            using var @base = new DataBase();
-            return @base.TransportCodeEach(number);
-        }
+        private static bool CheckDocumentCode(string number) => IDefaultSettings.TransportDocumentCodes.Exists(x => x.Contains("number"));
         private static void Calc(string value, ref double result)
         {
             if(value != null)
                 result += double.Parse(value, CultureInfo.InvariantCulture);
         }
-
         public static (string, string) Search(string value, XmlNode collection, string name)
         {
             foreach (XmlNode element in collection.ChildNodes)
@@ -161,11 +159,9 @@ namespace XmlParser
         private void Collect((string, string) value, (IWorkbook, ISheet) book)
         {
             _data.Add(value);
-            save(value, book);
+            Save(value, book);
         }
-        private static bool Validation((string, string) value)
-        {
-            return !string.IsNullOrWhiteSpace(value.Item1) || !string.IsNullOrWhiteSpace(value.Item2);
-        }
+        private static bool Validation((string, string) value) => !string.IsNullOrWhiteSpace(value.Item1) || !string.IsNullOrWhiteSpace(value.Item2);
+        
     }
 }
