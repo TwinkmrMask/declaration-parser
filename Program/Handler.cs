@@ -12,6 +12,7 @@ using System.Windows;
 namespace XmlParser
 {
     internal class Handler
+
     {
         private double _netWeightQuantity;
         private double _grossWeightQuantity;
@@ -37,7 +38,7 @@ namespace XmlParser
                 this._grossWeightQuantity = default;
                 this._netWeightQuantity = default;
                 this._positions = default;
-            }
+            }                          
         }
 
         public List<(string, string)> XmlHandler(in string file)
@@ -48,7 +49,7 @@ namespace XmlParser
                 if (File.Exists(file)) document.Load(file);
                 else document.LoadXml(file);
             }
-            catch { return new List<(string, string)>() { ("Файл повреждён", "Неудалось прочитать файл") }; }
+            catch (Exception exp) { MessageBox.Show(exp.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error); return new List<(string, string)>() { ("Файл повреждён", "Неудалось прочитать файл") }; }
 
             var book = Open();
 

@@ -84,12 +84,15 @@ namespace XmlParser
             if (Data.SelectedItem is not Content path) return;
             if (_dataBaseFlag)
             {
-                using XmlAdapter adapter = new();
-                info = new(adapter.GetContent(path.FileName), _dataBaseFlag);
+                using (XmlAdapter adapter = new())
+                {
+                    string path1 = adapter.GetContent(path.FileName);
+                    info = new(path1);
+                }
             }
             else
             {                
-                info = new(path.FileName, _dataBaseFlag);
+                info = new(path.FileName);
                 AddFile(path.FileName);
             }
             info.Show();
@@ -98,21 +101,22 @@ namespace XmlParser
         {
             using var reader = XmlReader.Create(name);
             if (reader.IsEmptyElement) return;
-            using XmlAdapter adapter = new();
-            string xml = reader.ReadInnerXml();
-            string filename = Path.GetFileName(name);
-            adapter.CreateLink(xml, filename);
+            using (XmlAdapter adapter = new())
+            {
+                string xml = reader.ReadInnerXml();
+                string filename = Path.GetFileName(name);
+                adapter.CreateLink(xml, filename);
+            }
         }
         private void OpenFromDatabase()
         {
-            if (_dataBaseFlag == false)
-                _dataBaseFlag = true;
-            else _dataBaseFlag = false;
+            _dataBaseFlag = _dataBaseFlag == false;
 
             List<Content> contents = new();
-            using XmlAdapter @base = new();
-            var data = @base.GetAllFileNames();
+            using (XmlAdapter @base = new()) { 
+                var data = @base.GetAllFileNames();
             if(data != default) contents.AddRange(data.Select(para => new Content { FileName = para }));
+            }
             Data.ItemsSource = contents;
             Data.Items.Refresh();
         }

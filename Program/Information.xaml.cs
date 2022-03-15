@@ -8,7 +8,7 @@ namespace XmlParser
     public partial class Information
     {
         private readonly Handler _handler;
-        public Information(string path, bool flag)
+        public Information(string path)
         {
             InitializeComponent();
             _handler = new();

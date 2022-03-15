@@ -17,25 +17,25 @@ namespace XmlParser
     {
         protected static string indexFileName;
         protected static string dataFileName;
-        private readonly uint _meaningRoot;
-        private readonly uint _unicodeSymbolMarker;
-        private readonly uint _unicodeSequenceMarker;
-        private readonly RawNumberToAddressConverter<uint> _numberToAddressConverter;
-        private readonly AddressToRawNumberConverter<uint> _addressToNumberConverter;
-        private readonly CachingConverterDecorator<string, uint> _stringToUnicodeSequenceConverter;
-        private readonly CachingConverterDecorator<uint, string> _unicodeSequenceToStringConverter;
-        private readonly UInt32SplitMemoryLinks _disposableLinks;
-        protected readonly UInt32Links Links;
+        private readonly ulong _meaningRoot;
+        private readonly ulong _unicodeSymbolMarker;
+        private readonly ulong _unicodeSequenceMarker;
+        private readonly RawNumberToAddressConverter<ulong> _numberToAddressConverter;
+        private readonly AddressToRawNumberConverter<ulong> _addressToNumberConverter;
+        private readonly CachingConverterDecorator<string, ulong> _stringToUnicodeSequenceConverter;
+        private readonly CachingConverterDecorator<ulong, string> _unicodeSequenceToStringConverter;
+        private readonly UInt64SplitMemoryLinks _disposableLinks;
+        protected readonly UInt64Links Links;
         public Platform()
         {
 
             var dataMemory = new FileMappedResizableDirectMemory(IDefaultSettings.DataFileName);
             var indexMemory = new FileMappedResizableDirectMemory(IDefaultSettings.IndexFileName);
 
-            var linksConstants = new LinksConstants<uint>(enableExternalReferencesSupport: true);
+            var linksConstants = new LinksConstants<ulong>(enableExternalReferencesSupport: true);
 
             // Init the links storage
-            _disposableLinks = new(dataMemory, indexMemory, UInt32SplitMemoryLinks.DefaultLinksSizeStep, linksConstants); // Low-level logic
+            _disposableLinks = new(dataMemory, indexMemory, UInt64SplitMemoryLinks.DefaultLinksSizeStep, linksConstants); // Low-level logic
             Links = new(_disposableLinks); // Main logic in the combined decorator
 
             // Set up constant links (markers, aka mapped links)
@@ -48,24 +48,24 @@ namespace XmlParser
             _addressToNumberConverter = new();
 
             // Create converters that are able to convert string to unicode sequence stored as link and back
-            BalancedVariantConverter<uint> balancedVariantConverter = new(Links);
-            TargetMatcher<uint> unicodeSymbolCriterionMatcher = new(Links, _unicodeSymbolMarker);
-            TargetMatcher<uint> unicodeSequenceCriterionMatcher = new(Links, _unicodeSequenceMarker);
-            CharToUnicodeSymbolConverter<uint> charToUnicodeSymbolConverter = new(Links, _addressToNumberConverter, _unicodeSymbolMarker);
-            UnicodeSymbolToCharConverter<uint> unicodeSymbolToCharConverter = new(Links, _numberToAddressConverter, unicodeSymbolCriterionMatcher);
-            RightSequenceWalker<uint> sequenceWalker = new(Links, new DefaultStack<uint>(), unicodeSymbolCriterionMatcher.IsMatched);
-            _stringToUnicodeSequenceConverter = new(new StringToUnicodeSequenceConverter<uint>(Links, charToUnicodeSymbolConverter, balancedVariantConverter, _unicodeSequenceMarker));
-            _unicodeSequenceToStringConverter = new(new UnicodeSequenceToStringConverter<uint>(Links, unicodeSequenceCriterionMatcher, sequenceWalker, unicodeSymbolToCharConverter));
+            BalancedVariantConverter<ulong> balancedVariantConverter = new(Links);
+            TargetMatcher<ulong> unicodeSymbolCriterionMatcher = new(Links, _unicodeSymbolMarker);
+            TargetMatcher<ulong> unicodeSequenceCriterionMatcher = new(Links, _unicodeSequenceMarker);
+            CharToUnicodeSymbolConverter<ulong> charToUnicodeSymbolConverter = new(Links, _addressToNumberConverter, _unicodeSymbolMarker);
+            UnicodeSymbolToCharConverter<ulong> unicodeSymbolToCharConverter = new(Links, _numberToAddressConverter, unicodeSymbolCriterionMatcher);
+            RightSequenceWalker<ulong> sequenceWalker = new(Links, new DefaultStack<ulong>(), unicodeSymbolCriterionMatcher.IsMatched);
+            _stringToUnicodeSequenceConverter = new(new StringToUnicodeSequenceConverter<ulong>(Links, charToUnicodeSymbolConverter, balancedVariantConverter, _unicodeSequenceMarker));
+            _unicodeSequenceToStringConverter = new(new UnicodeSequenceToStringConverter<ulong>(Links, unicodeSequenceCriterionMatcher, sequenceWalker, unicodeSymbolToCharConverter));
         }
-        private uint GetOrCreateMeaningRoot(uint meaningRootIndex) => Links.Exists(meaningRootIndex) ? meaningRootIndex : Links.CreatePoint();
-        private uint GetOrCreateNextMapping(uint currentMappingIndex) => Links.Exists(currentMappingIndex) ? currentMappingIndex : Links.CreateAndUpdate(_meaningRoot, Links.Constants.Itself);
-        public string ConvertToString(uint sequence) => _unicodeSequenceToStringConverter.Convert(sequence);
-        public uint ConvertToSequence(string @string) => _stringToUnicodeSequenceConverter.Convert(@string);
-        public void Delete(uint link) => Links.Delete(link);
+        private ulong GetOrCreateMeaningRoot(ulong meaningRootIndex) => Links.Exists(meaningRootIndex) ? meaningRootIndex : Links.CreatePoint();
+        private ulong GetOrCreateNextMapping(ulong currentMappingIndex) => Links.Exists(currentMappingIndex) ? currentMappingIndex : Links.CreateAndUpdate(_meaningRoot, Links.Constants.Itself);
+        public string ConvertToString(ulong sequence) => _unicodeSequenceToStringConverter.Convert(sequence);
+        public ulong ConvertToSequence(string @string) => _stringToUnicodeSequenceConverter.Convert(@string);
+        public void Delete(ulong link) => Links.Delete(link);
         protected override void Dispose(bool manual, bool wasDisposed)
         {
             if (!wasDisposed) _disposableLinks.DisposeIfPossible();
         }
-        
+
     }
 }
