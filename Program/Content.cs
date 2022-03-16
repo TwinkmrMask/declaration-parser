@@ -1,1 +1,1 @@
-﻿namespace XmlParser { internal class Content { public string FileName { get; init; } } }
+﻿class Content { public string FileName { get;  set; } }

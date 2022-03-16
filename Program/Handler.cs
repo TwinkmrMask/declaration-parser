@@ -5,7 +5,6 @@ using NPOI.XSSF.UserModel;
 using System.IO;
 using System.Xml;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Windows;
 
@@ -39,7 +38,7 @@ namespace XmlParser
                 if (File.Exists(file)) document.Load(file);
                 else document.LoadXml(file);
             }
-            catch (Exception exp) { MessageBox.Show(exp.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error); 
+            catch (Exception exp) { MessageBox.Show(exp.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return new List<(string, string)>() { ("Файл повреждён", "Неудалось прочитать файл") }; }
 
             var book = Open();
@@ -99,12 +98,12 @@ namespace XmlParser
                     }
                 }
             }
-            Collect(("Общая масса брутто", this._grossWeightQuantity.ToString(CultureInfo.InvariantCulture)), book);
-            Collect(("Общая масса нетто", this._netWeightQuantity.ToString(CultureInfo.InvariantCulture)), book);
-            Collect(("Всего позиций", this._positions.ToString(CultureInfo.InvariantCulture)), book);
+            Collect(("Общая масса брутто", _grossWeightQuantity.ToString(CultureInfo.InvariantCulture)), book);
+            Collect(("Общая масса нетто", _netWeightQuantity.ToString(CultureInfo.InvariantCulture)), book);
+            Collect(("Всего позиций", _positions.ToString(CultureInfo.InvariantCulture)), book);
             foreach (var pair in _awb.Distinct()) Collect(pair, book);
             Close(book.Item1);
-            return this._data;
+            return _data;
         }
 
         //auxiliary methods

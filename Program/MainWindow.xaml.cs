@@ -15,7 +15,6 @@ namespace XmlParser
         private bool _dataBaseFlag = false;
         private static void Copy(string text) => Clipboard.SetText(text);
 
-        //получает путь к обрабаываемому файлу
         private static void GetPath(out string directoryName, out string fileName)
         {
             try
@@ -56,13 +55,11 @@ namespace XmlParser
         {
             try
             {
-                GetPath(out this._directoryName, out this._fileName);
+                GetPath(out this._directoryName, out _fileName);
                 if (new[] { _directoryName, _fileName }.Any(string.IsNullOrWhiteSpace))
                     throw new IOException("Null path");
                 GetFile();
-                var declarations = _fileNames.Select(item => new Content
-                { FileName = item }).ToList();
-                Data.ItemsSource = declarations;
+                Data.ItemsSource = OpenFromDirectory();
             }
 
             catch (IOException e) when (e.Message == "Null path")
@@ -70,7 +67,7 @@ namespace XmlParser
                 if (MessageBox.Show("Выберите файл или закройте приложение", "Пустой путь", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.OK)
                     SetSource();
                 else
-                    this.Close();
+                    Close();
             }
         }
         public MainWindow()
@@ -82,6 +79,7 @@ namespace XmlParser
         {
             Information info;
             if (Data.SelectedItem is not Content path) return;
+
             if (_dataBaseFlag)
             {
                 using XmlAdapter adapter = new();

@@ -16,7 +16,7 @@ namespace XmlParser
             Start(path);
         }
         private void ToolbarStatus(string status) => toolbar.Content = status;
-        private void Start(string path) => Print(this._handler.XmlHandler(path));
+        private void Start(string path) => Print(_handler.XmlHandler(path));
         private void Print(IEnumerable<(string, string)> value)
         {
             foreach (var (item1, item2) in value.Where(item => (item.Item1 != null) || (item.Item2 != null)))
@@ -24,7 +24,7 @@ namespace XmlParser
         }
         private void OpenInExcel_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e) => ToolbarStatus("Открыть в MS Excel");
         private void OpenInExcel_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e) => ToolbarStatus(null);
-        private void OpenInExcel_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void OpenInExcel_Click(object sender, RoutedEventArgs e)
         {
             try
             {

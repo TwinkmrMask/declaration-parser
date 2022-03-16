@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Platform.Data.Doublets;
-using System.Windows;
 
 #pragma warning disable 649
 
@@ -9,7 +8,7 @@ namespace XmlParser
     public class XmlAdapter : Platform
     {
         private readonly ulong _fileNameMarker;
-        public Link<ulong> Query(ulong marker) => new(this.Links.Constants.Any, marker, this.Links.Constants.Any);
+        private Link<ulong> Query(ulong marker) => new(this.Links.Constants.Any, marker, this.Links.Constants.Any);
         public void CreateLink(in string innerXml, string filename)
         {
             var nameLink = ConvertToSequence(filename);
@@ -32,7 +31,7 @@ namespace XmlParser
             return names;
         }
         public string GetContent(string filename) => ConvertToString(Links.GetTarget(Links.SearchOrDefault(ConvertToSequence(filename), Links.Constants.Any)));
-        public bool IsLinks(Link<ulong> query) => this.Links.Count(query) > 0;
+        private bool IsLinks(Link<ulong> query) => this.Links.Count(query) > 0;
         public bool IsLinks(string element) => this.Links.Count(Query(ConvertToSequence(element))) > 0;
         public XmlAdapter() : base(IDefaultSettings.DataFileName, IDefaultSettings.IndexFileName) => _fileNameMarker = Links.GetOrCreate(ConvertToSequence(nameof(_fileNameMarker)), ConvertToSequence(nameof(_fileNameMarker)));
     }
