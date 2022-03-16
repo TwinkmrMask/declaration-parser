@@ -103,7 +103,7 @@ namespace XmlParser
             if (reader.IsEmptyElement) return;
             using (XmlAdapter adapter = new())
             {
-                string xml = reader.ReadInnerXml();
+                string xml = "";
                 string filename = Path.GetFileName(name);
                 adapter.CreateLink(xml, filename);
             }

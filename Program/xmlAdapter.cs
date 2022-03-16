@@ -13,6 +13,7 @@ namespace XmlParser
         private Link<ulong> Query(ulong marker) => new(this.Links.Constants.Any, marker, this.Links.Constants.Any);
         public void CreateLink(in string innerXml, string filename)
         {
+
             var nameLink = ConvertToSequence(filename);
             var documentLink = ConvertToSequence(innerXml);
             Links.GetOrCreate(_fileNameMarker, nameLink);
@@ -33,12 +34,7 @@ namespace XmlParser
             }, query);
             return names;
         }
-        public string GetContent(string filename)
-        {
-            MessageBox.Show(Links.Format(Links.SearchOrDefault(ConvertToSequence(filename), Links.Constants.Any)).ToString() + "\n" +
-                Links.FormatStructure(Links.SearchOrDefault(ConvertToSequence(filename), Links.Constants.Any), link => link.IsFullPoint(), true));
-            return default;
-        }
+        public string GetContent(string filename) => ConvertToString(Links.SearchOrDefault(ConvertToSequence(filename), Links.Constants.Any));
         private bool IsLinks(Link<ulong> query) => this.Links.Count(query) > 0;
 
         public XmlAdapter() => _fileNameMarker = Links.GetOrCreate(ConvertToSequence(nameof(_fileNameMarker)), ConvertToSequence(nameof(_fileNameMarker)));
