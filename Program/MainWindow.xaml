@@ -9,8 +9,16 @@
         <Label Content="Источник:" Margin="1,0,726,402" FontFamily="Comic Sans MS"/>
         <Label x:Name="Source" Content="" Margin="99,0,567,402" FontFamily="Comic Sans MS"/>
 
-        <Button x:Name="Open" Margin="613,0,17,402" Click="Open_Click"/>
-        <Button x:Name="Change" Margin="438,0,192,402" Visibility="Hidden" Click="Change_Click"/>
+        <Button x:Name="Open" Content="Открыть базу данных" Margin="0,10,18,0" Click="Open_Click" HorizontalAlignment="Right" VerticalAlignment="Top" Height="22" RenderTransformOrigin="0.5,0.5" Width="155">
+            <Button.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleX="1"/>
+                    <SkewTransform/>
+                    <RotateTransform/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Button.RenderTransform>
+        </Button>
         <ScrollViewer Background="Transparent" Margin="0,37,0,0">
             <DataGrid x:Name="Data" GridLinesVisibility="None"  Background="White" RowBackground="Transparent" CanUserAddRows="False">
                 <DataGrid.Columns>

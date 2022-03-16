@@ -353,3 +353,4 @@ MigrationBackup/
 *.xlsx
 *links
 *db
+*/Resources/

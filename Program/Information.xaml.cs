@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Windows;
 
 namespace XmlParser
 {
@@ -23,12 +24,20 @@ namespace XmlParser
         }
         private void OpenInExcel_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e) => ToolbarStatus("Открыть в MS Excel");
         private void OpenInExcel_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e) => ToolbarStatus(null);
-        private void OpenInExcel_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void OpenInExcel_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            var prc = new Process();
-            prc.StartInfo.FileName = @Path.GetFullPath(Handler.GetPath());
-            prc.StartInfo.UseShellExecute = true;
-            prc.Start();
+            try
+            {
+                var prc = new Process();
+                prc.StartInfo.FileName = @Path.GetFullPath(Handler.GetPath());
+                prc.StartInfo.UseShellExecute = true;
+                prc.Start();
+            }
+
+            catch
+            {
+                MessageBox.Show("Нет приложения для открытия этого файла", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

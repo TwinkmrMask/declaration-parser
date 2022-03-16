@@ -10,8 +10,7 @@
         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Margin="0,0,0,49" HorizontalAlignment="Left" Width="614">
             <TextBox x:Name="block" SelectionBrush="Transparent" BorderBrush="Transparent" BorderThickness="0,0,0,0"/>
         </ScrollViewer>
-
+        <Button x:Name="OpenInExcel" Background="ForestGreen" Content="Открыть в MS Excel" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="44" Width="165" MouseEnter="OpenInExcel_MouseEnter" MouseLeave="OpenInExcel_MouseLeave" OpacityMask="Black" Click="OpenInExcel_Click" Margin="0,0,5,5" FontSize="16" FontWeight="Normal" FontStyle="Normal"/>
         <Label x:Name="toolbar" Background="Transparent" Height="44" VerticalAlignment="Bottom" Content="" FontSize="20" HorizontalAlignment="Left" Width="614"/>
-        <Image x:Name="OpenInExcel" Source="/Resources/button.png" StretchDirection="UpOnly" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="372" Width="137" MouseEnter="OpenInExcel_MouseEnter" MouseLeave="OpenInExcel_MouseLeave" OpacityMask="Black" MouseLeftButtonDown="OpenInExcel_MouseLeftButtonDown"/>
     </Grid>
 </Window>

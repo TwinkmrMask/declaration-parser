@@ -1,13 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="FullSignature">
-  <Class Name="XmlParser.DataBase" Collapsed="true">
-    <Position X="3.75" Y="3.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>gAIAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAABAA=</HashCode>
-      <FileName>DataBase.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
   <Class Name="XmlParser.Content" Collapsed="true">
     <Position X="6" Y="6" Width="1.5" />
     <TypeIdentifier>
@@ -18,29 +10,28 @@
   <Class Name="XmlParser.Handler" Collapsed="true">
     <Position X="3.75" Y="6" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAIAAgQABACAIgAAACAAAAAAAAASUAACAAgAAACgAAA=</HashCode>
+      <HashCode>AAIAAoQABAAAIgAAACAAAAAIAAASUAAAAAgAAACgAAA=</HashCode>
       <FileName>Handler.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="XmlParser.XmlAdapter" Collapsed="true">
-    <Position X="6" Y="3.5" Width="1.5" />
+    <Position X="5" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAQAAAAAAQAACBAAQAgAACAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAACBAAQAgAACAAAAAAAAA=</HashCode>
       <FileName>xmlAdapter.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
   </Class>
   <Class Name="XmlParser.Platform" Collapsed="true">
     <Position X="5" Y="2" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAkAACAAEgBAAAAAAAAAAgAgIABACAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAoQsAACAgAgBAAAAAAAAAAgEgIABQCAAAAAAAAAA=</HashCode>
       <FileName>Platform.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="XmlParser.MainWindow" Collapsed="true">
     <Position X="11" Y="2" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAIAAAAAAAAAAYIAAAAAAAAAgACAAABAAAFBBBAAAA=</HashCode>
+      <HashCode>AEAIAAAAAAAAAAYIAAAAAAAAAgADAAABAAGEBBAAAAA=</HashCode>
       <FileName>MainWindow.xaml.cs</FileName>
     </TypeIdentifier>
     <Lollipop Orientation="Bottom" Position="0.235" />
@@ -69,7 +60,7 @@
   <Interface Name="XmlParser.IDefaultSettings" Collapsed="true">
     <Position X="8.75" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAAAAAAACAAAAAAAAAwgAAAAAAACAAgAAAAAAAAA=</HashCode>
+      <HashCode>AAACAAAAAAACAAAAAAAAAgAAAAAAAACAAgAAAAAAAAA=</HashCode>
       <FileName>IDefaultSettings.cs</FileName>
     </TypeIdentifier>
   </Interface>

@@ -1,10 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 
 namespace XmlParser
 {
     public interface IDefaultSettings
     {
-        const string DefaultPath = "../../../Resources/";
+        static string DefaultPath {
+            get
+            {
+                string path = "../../../Resources/";
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+                return path;
+            }
+        }
         static string NameExcelFile => DefaultPath + "declarationInfo.xlsx";
         static string IndexFileName => DefaultPath + "links";
         static string DataFileName => DefaultPath + "db";

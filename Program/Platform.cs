@@ -26,11 +26,11 @@ namespace XmlParser
         private readonly CachingConverterDecorator<ulong, string> _unicodeSequenceToStringConverter;
         private readonly UInt64SplitMemoryLinks _disposableLinks;
         protected readonly UInt64Links Links;
-        public Platform()
+        public Platform(string DataFileName, string IndexFileName)
         {
 
-            var dataMemory = new FileMappedResizableDirectMemory(IDefaultSettings.DataFileName);
-            var indexMemory = new FileMappedResizableDirectMemory(IDefaultSettings.IndexFileName);
+            var dataMemory = new FileMappedResizableDirectMemory(DataFileName);
+            var indexMemory = new FileMappedResizableDirectMemory(IndexFileName);
 
             var linksConstants = new LinksConstants<ulong>(enableExternalReferencesSupport: true);
 

@@ -14,7 +14,7 @@ namespace XmlParser
         private string _fileName;
         private bool _dataBaseFlag = false;
         private static void Copy(string text) => Clipboard.SetText(text);
-        
+
         //получает путь к обрабаываемому файлу
         private static void GetPath(out string directoryName, out string fileName)
         {
@@ -27,7 +27,7 @@ namespace XmlParser
             }
             catch (Exception exception1)
             {
-                if (MessageBox.Show( $"Ошибка - {exception1.HResult}\nНажмите OK чтобы скопировать код ошибки, или нажмите Отмена чтобы переписать самостоятельно",
+                if (MessageBox.Show($"Ошибка - {exception1.HResult}\nНажмите OK чтобы скопировать код ошибки, или нажмите Отмена чтобы переписать самостоятельно",
                     "Ошибка получения пути", MessageBoxButton.OKCancel,
                     MessageBoxImage.Error) == MessageBoxResult.OK)
                     Copy(exception1.HResult.ToString());
@@ -57,11 +57,11 @@ namespace XmlParser
             try
             {
                 GetPath(out this._directoryName, out this._fileName);
-                if ( new[] { _directoryName, _fileName }.Any(string.IsNullOrWhiteSpace))
+                if (new[] { _directoryName, _fileName }.Any(string.IsNullOrWhiteSpace))
                     throw new IOException("Null path");
                 GetFile();
-                var declarations = _fileNames.Select(item => new Content 
-                    { FileName = item }).ToList();
+                var declarations = _fileNames.Select(item => new Content
+                { FileName = item }).ToList();
                 Data.ItemsSource = declarations;
             }
 
@@ -84,14 +84,12 @@ namespace XmlParser
             if (Data.SelectedItem is not Content path) return;
             if (_dataBaseFlag)
             {
-                using (XmlAdapter adapter = new())
-                {
-                    string path1 = adapter.GetContent(path.FileName);
-                    info = new(path1);
-                }
+                using XmlAdapter adapter = new();
+                string path1 = adapter.GetContent(path.FileName);
+                info = new(path1);
             }
             else
-            {                
+            {
                 info = new(path.FileName);
                 AddFile(path.FileName);
             }
@@ -99,28 +97,33 @@ namespace XmlParser
         }
         private static void AddFile(string name)
         {
-            using var reader = XmlReader.Create(name);
-            if (reader.IsEmptyElement) return;
-            using (XmlAdapter adapter = new())
-            {
-                string xml = "";
-                string filename = Path.GetFileName(name);
-                adapter.CreateLink(xml, filename);
-            }
-        }
-        private void OpenFromDatabase()
-        {
-            _dataBaseFlag = _dataBaseFlag == false;
+            using XmlAdapter adapter = new();
+            if (adapter.IsLinks(name))
+                return;
 
-            List<Content> contents = new();
-            using (XmlAdapter @base = new()) { 
-                var data = @base.GetAllFileNames();
-            if(data != default) contents.AddRange(data.Select(para => new Content { FileName = para }));
-            }
-            Data.ItemsSource = contents;
-            Data.Items.Refresh();
+            XmlDocument document = new();
+            document.Load(name);
+            XmlElement root = document.DocumentElement;
+            
+            string xml = root.OuterXml;
+            string filename = Path.GetFileName(name);
+            adapter.CreateLink(xml, filename);
         }
-        private void Change_Click(object sender, RoutedEventArgs e) {}
-        private void Open_Click(object sender, RoutedEventArgs e) => OpenFromDatabase();
+
+        private List<Content> OpenFromDatabase()
+        {
+            List<Content> contents = new();
+            using XmlAdapter @base = new();
+            var data = @base.GetAllFileNames();
+            if (data != default) contents.AddRange(data.Select(para => new Content { FileName = para }));
+            return contents;
+        }
+        private void Open_Click(object sender, RoutedEventArgs e)
+        {
+            _dataBaseFlag = !_dataBaseFlag;
+            Data.ItemsSource = OpenData(_dataBaseFlag);
+        }
+        private List<Content> OpenData(bool _dataBaseFlag) => _dataBaseFlag ? OpenFromDatabase() : OpenFromDirectory();
+        private List<Content> OpenFromDirectory() => _fileNames.Select(item => new Content { FileName = item }).ToList();
     }
 }

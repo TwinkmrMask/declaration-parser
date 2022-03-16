@@ -24,21 +24,11 @@ namespace XmlParser
 
         public Handler()
         {
-            try
-            {
-                _grossWeightQuantity = 0;
-                _netWeightQuantity = 0;
-                _positions = 0;
-                _awb = new List<(string, string)>();
-                _data = new List<(string, string)>();
-            }
-            catch (Exception exception) { MessageBox.Show(exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
-            finally
-            {
-                this._grossWeightQuantity = default;
-                this._netWeightQuantity = default;
-                this._positions = default;
-            }                          
+            _grossWeightQuantity = 0;
+            _netWeightQuantity = 0;
+            _positions = 0;
+            _awb = new();
+            _data = new();
         }
 
         public List<(string, string)> XmlHandler(in string file)
@@ -49,7 +39,8 @@ namespace XmlParser
                 if (File.Exists(file)) document.Load(file);
                 else document.LoadXml(file);
             }
-            catch (Exception exp) { MessageBox.Show(exp.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error); return new List<(string, string)>() { ("Файл повреждён", "Неудалось прочитать файл") }; }
+            catch (Exception exp) { MessageBox.Show(exp.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error); 
+                return new List<(string, string)>() { ("Файл повреждён", "Неудалось прочитать файл") }; }
 
             var book = Open();
 
@@ -70,7 +61,7 @@ namespace XmlParser
                             break;
                         case "ESADout_CUConsigment":
                             foreach (XmlNode transport in info.ChildNodes)
-                                foreach(XmlNode unused in transport)
+                                foreach (XmlNode unused in transport)
                                     Collect(Search("catESAD_cu:TransportIdentifier", info, "Транспорт"), book);
                             break;
                         case "ESADout_CUMainContractTerms":
@@ -82,7 +73,10 @@ namespace XmlParser
                             Calc(Search("catESAD_cu:GrossWeightQuantity", info, "Масса брутто").Item2, ref _grossWeightQuantity);
                             Calc(Search("catESAD_cu:NetWeightQuantity", info, "Масса нетто").Item2, ref _netWeightQuantity);
                             break;
+                        default:
+                            break;
                     }
+
                     foreach (XmlNode product in info.ChildNodes)
                     {
                         foreach (XmlNode count in product.ChildNodes)
@@ -90,6 +84,7 @@ namespace XmlParser
                                 foreach (var about in count.Cast<XmlNode>().Where(about => about.Name == "catESAD_cu:GoodsGroupQuantity"))
                                     Calc(Search("catESAD_cu:GoodsQuantity", about, "Количество товара").Item2, ref _positions);
                     }
+
                     foreach (XmlNode doc in info)
                     {
                         if (doc.Name == "ESADout_CUPresentedDocument")
@@ -103,15 +98,15 @@ namespace XmlParser
                         }
                     }
                 }
-            } 
+            }
             Collect(("Общая масса брутто", this._grossWeightQuantity.ToString(CultureInfo.InvariantCulture)), book);
-            Collect(("Общая масса нетто", this._netWeightQuantity.ToString(CultureInfo.InvariantCulture)), book); 
+            Collect(("Общая масса нетто", this._netWeightQuantity.ToString(CultureInfo.InvariantCulture)), book);
             Collect(("Всего позиций", this._positions.ToString(CultureInfo.InvariantCulture)), book);
             foreach (var pair in _awb.Distinct()) Collect(pair, book);
             Close(book.Item1);
             return this._data;
         }
-        
+
         //auxiliary methods
         private static void Close(IWorkbook wb)
         {
@@ -163,6 +158,6 @@ namespace XmlParser
             Save(value, book);
         }
         private static bool Validation((string, string) value) => !string.IsNullOrWhiteSpace(value.Item1) || !string.IsNullOrWhiteSpace(value.Item2);
-        
+
     }
 }
