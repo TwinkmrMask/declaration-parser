@@ -1,5 +1,6 @@
 ﻿
 using System.IO;
+using XmlParser;
 
 namespace xmlparser.tests
 {
@@ -7,10 +8,11 @@ namespace xmlparser.tests
     {
         public void Generate(int num) 
         {
-            IDefaultSettingsTest.DefaultXmlFileName = num.ToString();
-            using FileStream fileStream = new(IDefaultSettingsTest.DefaultPath + IDefaultSettingsTest.DefaultXmlFileName, FileMode.Create, FileAccess.Write);
+            
+            using FileStream fileStream = new(IDefaultSettings.DefaultPath +  $"test {num}.xml", FileMode.Create, FileAccess.Write);
             StreamWriter writer = new StreamWriter(fileStream);
             writer.WriteLine("<test/>");
+            writer.Close();
         }
     }
 }

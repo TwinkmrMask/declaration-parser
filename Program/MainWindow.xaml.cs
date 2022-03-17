@@ -43,7 +43,7 @@ namespace XmlParser
 
             if (_dataBaseFlag)
             {
-                using XmlAdapter adapter = new();
+                using XmlAdapter adapter = new(IDefaultSettings.DataFileName, IDefaultSettings.IndexFileName);
                 string path1 = adapter.GetContent(path.FileName);
                 info = new(path1);
             }
@@ -56,7 +56,7 @@ namespace XmlParser
         }
         private static void AddFile(string name)
         {
-            using XmlAdapter adapter = new();
+            using XmlAdapter adapter = new(IDefaultSettings.DataFileName, IDefaultSettings.IndexFileName);
             if (adapter.IsLinks(name))
                 return;
 
@@ -66,14 +66,14 @@ namespace XmlParser
             
             string xml = root.OuterXml;
             string filename = Path.GetFileName(name);
-            adapter.CreateLink(xml, filename);
+            adapter.CreateLink(filename, xml);
         }
 
         private List<Content> OpenFromDatabase()
         {
             List<Content> contents = new();
-            using XmlAdapter @base = new();
-            var data = @base.GetAllFileNames();
+            using XmlAdapter adapter = new(IDefaultSettings.DataFileName, IDefaultSettings.IndexFileName);
+            var data = adapter.GetAllFileNames();
             if (data != default) contents.AddRange(data.Select(para => new Content { FileName = para }));
             return contents;
         }

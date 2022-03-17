@@ -19,9 +19,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Program\xmlparser.csproj" />
+      <ProjectReference Include="..\Program\xmlparser.csproj" />
   </ItemGroup>
 
 </Project>
