@@ -3,7 +3,6 @@ using System.Linq;
 using System.Windows;
 using System.IO;
 using System.Xml;
-using System;
 
 namespace XmlParser
 {
@@ -17,16 +16,16 @@ namespace XmlParser
             try
             {
                 FileSearcher file = new();
-                var fileData = file.GetPath();
+                var fileData = file.TryGetPath();
                 if (new[] { fileData.directoryName, fileData.fileName}.Any(string.IsNullOrWhiteSpace))
                     throw new IOException("Null path");
-                _fileNames = file.GetFiles(fileData.directoryName, "*.xml");
+                _fileNames = file.TryGetFiles(fileData.directoryName, "*.xml");
                 Data.ItemsSource = OpenFromDirectory();
             }
 
             catch (IOException e) when (e.Message == "Null path")
             {
-                if (MessageBox.Show("Выберите файл или закройте приложение", "Пустой путь", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.OK)
+                if (IDefaultSettings.Exception("Выберите файл или закройте приложение", "Пустой путь", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
                     SetSource();
                 else
                     Close();

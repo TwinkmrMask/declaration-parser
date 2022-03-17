@@ -2,56 +2,52 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
-
-    class FileSearcher
+namespace XmlParser
+{
+    public class FileSearcher
     {
         private static void Copy(string text) => Clipboard.SetText(text);
-        public List<string> GetFiles(string directory, string format) 
+        
+        //TryMethods
+        public List<string> TryGetFiles(string directory, string format)
         {
-            if (string.IsNullOrEmpty(directory))
+            try { return GetFiles(directory, format); }
+            catch (Exception ex)
             {
-                throw new ArgumentException($"\"{nameof(directory)}\" не может быть неопределенным или пустым.", nameof(directory));
+                if (IDefaultSettings.Exception($"Ошибка - {ex.HResult}\nНажмите OK чтобы скопировать код ошибки, или нажмите Отмена чтобы переписать самостоятельно",
+                    "Неизвестная ошибка", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                    Copy(ex.HResult.ToString());
+                return default;
             }
-
-            if (string.IsNullOrEmpty(format))
-            {
-                throw new ArgumentException($"\"{nameof(format)}\" не может быть неопределенным или пустым.", nameof(format));
-            }
-
-            List<string> _fileNames = new();
+        }
+        public (string directoryName, string fileName) TryGetPath()
+        {
             try
             {
-                var allFiles = Directory.EnumerateFiles(directory, format);
-                foreach (var filename in allFiles) _fileNames.Add(filename);
+                return GetPath();
             }
-
-            catch (Exception exception4)
+            catch (Exception ex)
             {
-                if (MessageBox.Show($"Ошибка - {exception4.HResult}\nНажмите OK чтобы скопировать код ошибки, или нажмите Отмена чтобы переписать самостоятельно",
-                    "Неизвестная ошибка", MessageBoxButton.OKCancel,
-                    MessageBoxImage.Error) == MessageBoxResult.OK)
-                    Copy(exception4.HResult.ToString());
-                    
+                if (IDefaultSettings.Exception($"Ошибка - {ex.HResult}\nНажмите OK чтобы скопировать код ошибки, или нажмите Отмена чтобы переписать самостоятельно",
+                    "Ошибка получения пути", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                    Copy(ex.HResult.ToString());
+                return default;
             }
+        }
 
+        //MainMethods
+        protected List<string> GetFiles(string directory, string format)
+        {
+            List<string> _fileNames = new();
+            var allFiles = Directory.EnumerateFiles(directory, format);
+            foreach (var filename in allFiles) _fileNames.Add(filename);
             return _fileNames;
         }
-        public (string directoryName, string fileName)  GetPath()
+        protected (string directoryName, string fileName) GetPath()
         {
-            try
-            {
-                var openDialog = new Microsoft.Win32.OpenFileDialog { Filter = "Файл Xml|*.xml" };
-                openDialog.ShowDialog();
-                return (Path.GetDirectoryName(openDialog.FileName), openDialog.FileName);
-            }
-            catch (Exception exception1)
-            {
-                if (MessageBox.Show($"Ошибка - {exception1.HResult}\nНажмите OK чтобы скопировать код ошибки, или нажмите Отмена чтобы переписать самостоятельно",
-                    "Ошибка получения пути", MessageBoxButton.OKCancel,
-                    MessageBoxImage.Error) == MessageBoxResult.OK)
-                    Copy(exception1.HResult.ToString());
-            return default;
-            }
+            var openDialog = new Microsoft.Win32.OpenFileDialog { Filter = "Файл Xml|*.xml" };
+            openDialog.ShowDialog();
+            return (Path.GetDirectoryName(openDialog.FileName), openDialog.FileName);
         }
     }
-
+}
