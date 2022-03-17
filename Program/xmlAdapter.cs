@@ -36,4 +36,3 @@ namespace XmlParser
         public XmlAdapter() : base(IDefaultSettings.DataFileName, IDefaultSettings.IndexFileName) => _fileNameMarker = Links.GetOrCreate(ConvertToSequence(nameof(_fileNameMarker)), ConvertToSequence(nameof(_fileNameMarker)));
     }
 }
- 

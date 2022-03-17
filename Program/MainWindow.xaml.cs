@@ -9,56 +9,18 @@ namespace XmlParser
 {
     public partial class MainWindow
     {
-        private readonly List<string> _fileNames = new();
-        private string _directoryName;
-        private string _fileName;
+        private  List<string> _fileNames = new();
         private bool _dataBaseFlag = false;
-        private static void Copy(string text) => Clipboard.SetText(text);
 
-        private static void GetPath(out string directoryName, out string fileName)
-        {
-            try
-            {
-                var openDialog = new Microsoft.Win32.OpenFileDialog { Filter = "Файл Xml|*.xml" };
-                openDialog.ShowDialog();
-                directoryName = Path.GetDirectoryName(openDialog.FileName);
-                fileName = openDialog.FileName;
-            }
-            catch (Exception exception1)
-            {
-                if (MessageBox.Show($"Ошибка - {exception1.HResult}\nНажмите OK чтобы скопировать код ошибки, или нажмите Отмена чтобы переписать самостоятельно",
-                    "Ошибка получения пути", MessageBoxButton.OKCancel,
-                    MessageBoxImage.Error) == MessageBoxResult.OK)
-                    Copy(exception1.HResult.ToString());
-                directoryName = default;
-                fileName = default;
-            }
-        }
-        private void GetFile()
-        {
-            try
-            {
-                var allFiles = Directory.EnumerateFiles(_directoryName, "*.xml");
-                foreach (var filename in allFiles) _fileNames.Add(filename);
-            }
-
-            catch (Exception exception4)
-            {
-                if (MessageBox.Show($"Ошибка - {exception4.HResult}\nНажмите OK чтобы скопировать код ошибки, или нажмите Отмена чтобы переписать самостоятельно",
-                    "Неизвестная ошибка", MessageBoxButton.OKCancel,
-                    MessageBoxImage.Error) == MessageBoxResult.OK)
-                    Copy(exception4.HResult.ToString());
-
-            }
-        }
         private void SetSource()
         {
             try
             {
-                GetPath(out this._directoryName, out _fileName);
-                if (new[] { _directoryName, _fileName }.Any(string.IsNullOrWhiteSpace))
+                FileSearcher file = new();
+                var fileData = file.GetPath();
+                if (new[] { fileData.directoryName, fileData.fileName}.Any(string.IsNullOrWhiteSpace))
                     throw new IOException("Null path");
-                GetFile();
+                _fileNames = file.GetFiles(fileData.directoryName, "*.xml");
                 Data.ItemsSource = OpenFromDirectory();
             }
 
