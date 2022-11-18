@@ -2,9 +2,9 @@ using Xunit;
 using XmlParser;
 using System.Collections.Generic;
 
-namespace xmlparser.tests
+namespace XmlParser.Tests
 {
-    public class UnitTestFileSearcher : FileSearcher
+    public class UnitTestFileSearcher : TryMethods.TryMethods
     {
         [Fact]
         public void GetFilesTest() 
@@ -12,11 +12,11 @@ namespace xmlparser.tests
             List<string> testFiles = new();
 
             GenerateXml generateXml = new();
-            generateXml.Generate(1);
+            GenerateXml.Generate(1);
             testFiles.Add(IDefaultSettings.DefaultPath + $"test 1.xml");
-            generateXml.Generate(2);
+            GenerateXml.Generate(2);
             testFiles.Add(IDefaultSettings.DefaultPath + $"test 2.xml");
-            generateXml.Generate(3);
+            GenerateXml.Generate(3);
             testFiles.Add(IDefaultSettings.DefaultPath + $"test 3.xml");
 
             var files = GetFiles(IDefaultSettings.DefaultPath, "*.xml");

@@ -1,1 +1,1 @@
-﻿class Content { public string FileName { get;  set; } }
+﻿namespace XmlParser { internal struct Content { public string FileName { get;  init; } } }

@@ -7,20 +7,16 @@ namespace XmlParser
 {
     public class XmlAdapter : Platform
     {
-        public XmlAdapter(string _dataFileName, string _indexFileName) : base(_dataFileName, _indexFileName) =>
-            _fileNameMarker = Links.GetOrCreate(ConvertToSequence(nameof(_fileNameMarker)), ConvertToSequence(nameof(_fileNameMarker)));
-
         private static ulong _fileNameMarker;
+        
+        public XmlAdapter(string dataFileName, string indexFileName) : base(dataFileName, indexFileName) =>
+            _fileNameMarker = Links.GetOrCreate(ConvertToSequence(nameof(_fileNameMarker)), ConvertToSequence(nameof(_fileNameMarker)));
         private Link<ulong> Query(ulong marker) => new(this.Links.Constants.Any, marker, this.Links.Constants.Any);
         private bool IsLinks(Link<ulong> query) => this.Links.Count(query) > 0;
-
-
         public void CreateLink(string filename, in string innerXml)
         {
-            var nameLink = ConvertToSequence(filename);
-            var documentLink = ConvertToSequence(innerXml);
-            Links.GetOrCreate(_fileNameMarker, nameLink);
-            Links.GetOrCreate(nameLink, documentLink);
+            Links.GetOrCreate(_fileNameMarker, ConvertToSequence(filename));
+            Links.GetOrCreate(ConvertToSequence(filename), ConvertToSequence(innerXml));
         }
         public List<string> GetAllFileNames()
         {

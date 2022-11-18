@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using TryMethods;
 
 namespace XmlParser
 {
@@ -33,11 +35,7 @@ namespace XmlParser
                 prc.StartInfo.UseShellExecute = true;
                 prc.Start();
             }
-
-            catch
-            {
-                MessageBox.Show("Нет приложения для открытия этого файла", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            catch (Exception exp) { ExceptionMethods.CopyException(exp.HResult.ToString(), "Нет приложения для открытия этого файла"); }
         }
     }
 }

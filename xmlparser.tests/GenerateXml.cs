@@ -2,15 +2,14 @@
 using System.IO;
 using XmlParser;
 
-namespace xmlparser.tests
+namespace XmlParser.Tests
 {
     internal class GenerateXml
     {
-        public void Generate(int num) 
+        public static void Generate(int num) 
         {
-            
             using FileStream fileStream = new(IDefaultSettings.DefaultPath +  $"test {num}.xml", FileMode.Create, FileAccess.Write);
-            StreamWriter writer = new StreamWriter(fileStream);
+            StreamWriter writer = new (fileStream);
             writer.WriteLine("<test/>");
             writer.Close();
         }

@@ -10,12 +10,13 @@ namespace XmlParser
         {
             get
             {
-                string path = "../../../Resources/";
+                const string path = "../../../Resources/";
                 if (!Directory.Exists(path))
                     Directory.CreateDirectory(path);
                 return path;
             }
         }
+
         static string NameExcelFile => DefaultPath + "declarationInfo.xlsx";
         static string IndexFileName => DefaultPath + "links";
         static string DataFileName => DefaultPath + "db";
@@ -38,7 +39,5 @@ namespace XmlParser
             "02025",
             "02099"
         };
-
-        static MessageBoxResult Exception(string exception, string error, MessageBoxButton button) => MessageBox.Show(exception, error, button, MessageBoxImage.Error);
     }
 }

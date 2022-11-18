@@ -1,16 +1,14 @@
 ﻿using Platform.Data.Doublets;
 using System.Collections.Generic;
-using XmlParser;
-using System.Linq;
 using Xunit;
 
 #pragma warning disable IDE0051
 
-namespace xmlparser.tests
+namespace XmlParser.Tests
 {
     public class UnitTestXmlAdapter : XmlAdapter
     {
-        Dictionary<string, string> testData = new()
+        private readonly Dictionary<string, string> _testData = new()
         {
             ["filename1"] = "content1",
             ["filename3"] = "content2",
@@ -20,36 +18,34 @@ namespace xmlparser.tests
         public UnitTestXmlAdapter() : base(IDefaultSettings.DataFileName, IDefaultSettings.IndexFileName) { }
 
         [Fact]
-        void CreateLinkTest()
+        private void CreateLinkTest()
         {
-            foreach (var item in testData)
+            foreach (var item in _testData)
             {
                 CreateLink(item.Key, item.Value);
                 Assert.True(Links.SearchOrDefault(ConvertToSequence(item.Key), ConvertToSequence(item.Value)) > 0);
             }
-
         }
 
         [Fact]
-        void UnitTestContentGetAllFileNames()
+        private void UnitTestContentGetAllFileNames()
         {
             Assert.NotNull(GetAllFileNames());
 
             var filenames = GetAllFileNames();
             foreach (var filename in filenames)
-                Assert.True(testData.ContainsKey(filename));
-            Assert.Equal(testData.Count, filenames.Count);
+                Assert.True(_testData.ContainsKey(filename));
+            Assert.Equal(_testData.Count, filenames.Count);
         }
 
         [Fact]
-        void UnitTestIsLinks()
+        private void UnitTestIsLinks()
         {
-            foreach (var item in testData)
+            foreach (var item in _testData)
             {
                 Assert.True(IsLinks(item.Key));
                 Assert.False(IsLinks(item.Value));
             }
-
         }
     }
 }

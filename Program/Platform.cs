@@ -15,22 +15,16 @@ namespace XmlParser
 {
     public class Platform : DisposableBase
     {
-        protected static string indexFileName;
-        protected static string dataFileName;
         private readonly ulong _meaningRoot;
-        private readonly ulong _unicodeSymbolMarker;
-        private readonly ulong _unicodeSequenceMarker;
-        private readonly RawNumberToAddressConverter<ulong> _numberToAddressConverter;
-        private readonly AddressToRawNumberConverter<ulong> _addressToNumberConverter;
         private readonly CachingConverterDecorator<string, ulong> _stringToUnicodeSequenceConverter;
         private readonly CachingConverterDecorator<ulong, string> _unicodeSequenceToStringConverter;
         private readonly UInt64SplitMemoryLinks _disposableLinks;
         protected readonly UInt64Links Links;
-        public Platform(string DataFileName, string IndexFileName)
-        {
 
-            var dataMemory = new FileMappedResizableDirectMemory(DataFileName);
-            var indexMemory = new FileMappedResizableDirectMemory(IndexFileName);
+        protected Platform(string dataFileName, string indexFileName)
+        {
+            var dataMemory = new FileMappedResizableDirectMemory(dataFileName);
+            var indexMemory = new FileMappedResizableDirectMemory(indexFileName);
 
             var linksConstants = new LinksConstants<ulong>(enableExternalReferencesSupport: true);
 
@@ -41,31 +35,28 @@ namespace XmlParser
             // Set up constant links (markers, aka mapped links)
             uint currentMappingLinkIndex = 1;
             _meaningRoot = GetOrCreateMeaningRoot(currentMappingLinkIndex++);
-            _unicodeSymbolMarker = GetOrCreateNextMapping(currentMappingLinkIndex++);
-            _unicodeSequenceMarker = GetOrCreateNextMapping(currentMappingLinkIndex++);
+            var unicodeSymbolMarker = GetOrCreateNextMapping(currentMappingLinkIndex++);
+            var unicodeSequenceMarker = GetOrCreateNextMapping(currentMappingLinkIndex);
             // Create converters that are able to convert link's address (UInt64 value) to a raw number represented with another UInt64 value and back
-            _numberToAddressConverter = new();
-            _addressToNumberConverter = new();
+            RawNumberToAddressConverter<ulong> numberToAddressConverter = new();
+            AddressToRawNumberConverter<ulong> addressToNumberConverter = new();
 
             // Create converters that are able to convert string to unicode sequence stored as link and back
             BalancedVariantConverter<ulong> balancedVariantConverter = new(Links);
-            TargetMatcher<ulong> unicodeSymbolCriterionMatcher = new(Links, _unicodeSymbolMarker);
-            TargetMatcher<ulong> unicodeSequenceCriterionMatcher = new(Links, _unicodeSequenceMarker);
-            CharToUnicodeSymbolConverter<ulong> charToUnicodeSymbolConverter = new(Links, _addressToNumberConverter, _unicodeSymbolMarker);
-            UnicodeSymbolToCharConverter<ulong> unicodeSymbolToCharConverter = new(Links, _numberToAddressConverter, unicodeSymbolCriterionMatcher);
+            TargetMatcher<ulong> unicodeSymbolCriterionMatcher = new(Links, unicodeSymbolMarker);
+            TargetMatcher<ulong> unicodeSequenceCriterionMatcher = new(Links, unicodeSequenceMarker);
+            CharToUnicodeSymbolConverter<ulong> charToUnicodeSymbolConverter = new(Links, addressToNumberConverter, unicodeSymbolMarker);
+            UnicodeSymbolToCharConverter<ulong> unicodeSymbolToCharConverter = new(Links, numberToAddressConverter, unicodeSymbolCriterionMatcher);
             RightSequenceWalker<ulong> sequenceWalker = new(Links, new DefaultStack<ulong>(), unicodeSymbolCriterionMatcher.IsMatched);
-            _stringToUnicodeSequenceConverter = new(new StringToUnicodeSequenceConverter<ulong>(Links, charToUnicodeSymbolConverter, balancedVariantConverter, _unicodeSequenceMarker));
+            _stringToUnicodeSequenceConverter = new(new StringToUnicodeSequenceConverter<ulong>(Links, charToUnicodeSymbolConverter, balancedVariantConverter, unicodeSequenceMarker));
             _unicodeSequenceToStringConverter = new(new UnicodeSequenceToStringConverter<ulong>(Links, unicodeSequenceCriterionMatcher, sequenceWalker, unicodeSymbolToCharConverter));
         }
         private ulong GetOrCreateMeaningRoot(ulong meaningRootIndex) => Links.Exists(meaningRootIndex) ? meaningRootIndex : Links.CreatePoint();
         private ulong GetOrCreateNextMapping(ulong currentMappingIndex) => Links.Exists(currentMappingIndex) ? currentMappingIndex : Links.CreateAndUpdate(_meaningRoot, Links.Constants.Itself);
-        public string ConvertToString(ulong sequence) => _unicodeSequenceToStringConverter.Convert(sequence);
-        public ulong ConvertToSequence(string @string) => _stringToUnicodeSequenceConverter.Convert(@string);
+        protected string ConvertToString(ulong sequence) => _unicodeSequenceToStringConverter.Convert(sequence);
+        protected ulong ConvertToSequence(string @string) => _stringToUnicodeSequenceConverter.Convert(@string);
         public void Delete(ulong link) => Links.Delete(link);
-        protected override void Dispose(bool manual, bool wasDisposed)
-        {
-            if (!wasDisposed) _disposableLinks.DisposeIfPossible();
-        }
+        protected override void Dispose(bool manual, bool wasDisposed) { if (!wasDisposed) _disposableLinks.DisposeIfPossible(); }
 
     }
 }

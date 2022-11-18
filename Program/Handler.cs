@@ -30,13 +30,13 @@ namespace XmlParser
             _data = new();
         }
 
-        public List<(string, string)> XmlHandler(in string file)
+        public IEnumerable<(string, string)> XmlHandler(in string file)
         {
             var document = new XmlDocument();
             try
             {
                 if (File.Exists(file)) document.Load(file);
-                else document.LoadXml(file);
+                else document.LoadXml(file!);
             }
             catch (Exception exp) { MessageBox.Show(exp.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return new List<(string, string)>() { ("Файл повреждён", "Неудалось прочитать файл") }; }
@@ -72,8 +72,6 @@ namespace XmlParser
                             Calc(Search("catESAD_cu:GrossWeightQuantity", info, "Масса брутто").Item2, ref _grossWeightQuantity);
                             Calc(Search("catESAD_cu:NetWeightQuantity", info, "Масса нетто").Item2, ref _netWeightQuantity);
                             break;
-                        default:
-                            break;
                     }
 
                     foreach (XmlNode product in info.ChildNodes)
@@ -84,17 +82,12 @@ namespace XmlParser
                                     Calc(Search("catESAD_cu:GoodsQuantity", about, "Количество товара").Item2, ref _positions);
                     }
 
-                    foreach (XmlNode doc in info)
+                    foreach (var doc in from XmlNode doc in info where doc.Name == "ESADout_CUPresentedDocument" 
+                             where CheckDocumentCode(Search("catESAD_cu:PresentedDocumentModeCode",
+                                 doc, "Классификационный номер документа").Item2) select doc)
                     {
-                        if (doc.Name == "ESADout_CUPresentedDocument")
-                        {
-                            if (CheckDocumentCode(Search("catESAD_cu:PresentedDocumentModeCode",
-                                doc, "Классификационный номер документа").Item2))
-                            {
-                                Add(Search("cat_ru:PrDocumentName", doc, "Документ"));
-                                Add(Search("cat_ru:PrDocumentNumber", doc, "Номер документа"));
-                            }
-                        }
+                        Add(Search("cat_ru:PrDocumentName", doc, "Документ"));
+                        Add(Search("cat_ru:PrDocumentNumber", doc, "Номер документа"));
                     }
                 }
             }
@@ -109,12 +102,9 @@ namespace XmlParser
         //auxiliary methods
         private static void Close(IWorkbook wb)
         {
-            if (!Directory.Exists(IDefaultSettings.DefaultPath)) Directory.CreateDirectory(IDefaultSettings.DefaultPath);
-            using (var fs = new FileStream(GetPath(), FileMode.Create, FileAccess.Write))
-            {
-                wb.Write(fs);
-                fs.Close();
-            }
+            using var fs = new FileStream(GetPath(), FileMode.Create, FileAccess.Write);
+            wb.Write(fs);
+            fs.Close();
             wb.Close();
         }
         private static (IWorkbook, ISheet) Open()
@@ -124,7 +114,7 @@ namespace XmlParser
             var sh = wb.CreateSheet(sheetName);
             return (wb, sh);
         }
-        private void Save(in (string, string) row, (IWorkbook, ISheet) book)
+        private static void Save(in (string, string) row, (IWorkbook, ISheet) book)
         {
             if (!Validation(row)) return;
             var currentRow = book.Item2.CreateRow(book.Item2.LastRowNum + 1);
@@ -138,13 +128,14 @@ namespace XmlParser
             if (!_awb.Contains(pair))
                 _awb.Add(pair);
         }
-        private static bool CheckDocumentCode(string number) => IDefaultSettings.TransportDocumentCodes.Exists(x => x.Contains("number"));
+        private static bool CheckDocumentCode(string number) => IDefaultSettings.TransportDocumentCodes.Exists(x => x.Contains(number));
         private static void Calc(string value, ref double result)
         {
             if(value != null)
                 result += double.Parse(value, CultureInfo.InvariantCulture);
         }
-        public static (string, string) Search(string value, XmlNode collection, string name)
+
+        private static (string, string) Search(string value, XmlNode collection, string name)
         {
             foreach (XmlNode element in collection.ChildNodes)
                 if (element.Name == value)

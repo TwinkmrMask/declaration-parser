@@ -3,29 +3,29 @@ using System.Linq;
 using System.Windows;
 using System.IO;
 using System.Xml;
+using TryMethods;
 
 namespace XmlParser
 {
     public partial class MainWindow
     {
         private  List<string> _fileNames = new();
-        private bool _dataBaseFlag = false;
+        private bool _dataBaseFlag;
 
         private void SetSource()
         {
             try
             {
-                FileSearcher file = new();
-                var fileData = file.TryGetPath();
-                if (new[] { fileData.directoryName, fileData.fileName}.Any(string.IsNullOrWhiteSpace))
+                var fileName = TryMethods.TryMethods.TryGetFilename();
+                if (new[] { Path.GetDirectoryName(fileName), fileName}.Any(string.IsNullOrWhiteSpace))
                     throw new IOException("Null path");
-                _fileNames = file.TryGetFiles(fileData.directoryName, "*.xml");
+                _fileNames = TryMethods.TryMethods.TryGetFiles(Path.GetDirectoryName(fileName), "*.xml");
                 Data.ItemsSource = OpenFromDirectory();
             }
 
             catch (IOException e) when (e.Message == "Null path")
             {
-                if (IDefaultSettings.Exception("Выберите файл или закройте приложение", "Пустой путь", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                if (ExceptionMethods.ActionException("Выберите файл или закройте приложение", "Пустой путь"))
                     SetSource();
                 else
                     Close();
@@ -44,7 +44,7 @@ namespace XmlParser
             if (_dataBaseFlag)
             {
                 using XmlAdapter adapter = new(IDefaultSettings.DataFileName, IDefaultSettings.IndexFileName);
-                string path1 = adapter.GetContent(path.FileName);
+                var path1 = adapter.GetContent(path.FileName);
                 info = new(path1);
             }
             else
@@ -62,14 +62,14 @@ namespace XmlParser
 
             XmlDocument document = new();
             document.Load(name);
-            XmlElement root = document.DocumentElement;
+            var root = document.DocumentElement;
             
-            string xml = root.OuterXml;
-            string filename = Path.GetFileName(name);
+            var xml = root!.OuterXml;
+            var filename = Path.GetFileName(name);
             adapter.CreateLink(filename, xml);
         }
-
-        private List<Content> OpenFromDatabase()
+        
+        private static List<Content> OpenFromDatabase()
         {
             List<Content> contents = new();
             using XmlAdapter adapter = new(IDefaultSettings.DataFileName, IDefaultSettings.IndexFileName);
@@ -77,12 +77,8 @@ namespace XmlParser
             if (data != default) contents.AddRange(data.Select(para => new Content { FileName = para }));
             return contents;
         }
-        private void Open_Click(object sender, RoutedEventArgs e)
-        {
-            _dataBaseFlag = !_dataBaseFlag;
-            Data.ItemsSource = OpenData(_dataBaseFlag);
-        }
-        private List<Content> OpenData(bool _dataBaseFlag) => _dataBaseFlag ? OpenFromDatabase() : OpenFromDirectory();
+        private void Open_Click(object sender, RoutedEventArgs e) => Data.ItemsSource = OpenData(!_dataBaseFlag);
+        private IEnumerable<Content> OpenData(bool dataBaseFlag) => dataBaseFlag ? OpenFromDatabase() : OpenFromDirectory();
         private List<Content> OpenFromDirectory() => _fileNames.Select(item => new Content { FileName = item }).ToList();
     }
 }
